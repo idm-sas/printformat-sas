@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SuratJalan" language="groovy" pageWidth="609" pageHeight="392" columnWidth="595" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" isSummaryWithPageHeaderAndFooter="true" uuid="328eb258-edbc-400a-986e-092bec7c3f0c">
 	<property name="ireport.zoom" value="1.2396694214876043"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="258"/>
+	<property name="ireport.y" value="114"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2"/>
 	</style>
@@ -89,7 +89,9 @@
 	rl.Name InvoiceRule,
 	g.name Greeting,
 	o.c_doctype_id DocType_ID,
-	o.FLNStatus
+	o.FLNStatus,
+	parse('AD_User',o.SalesRep_ID,1) SALES_NAME,
+	parse('AD_User',COALESCE(oq.CreatedBy,o.CreatedBy),1) SO_CREATEDBY
 FROM M_InOutLine iol
 INNER JOIN M_InOut io ON (io.M_InOut_ID = iol.M_InOut_ID)
 INNER JOIN AD_Org org ON (org.AD_Org_ID = io.AD_Org_ID)
@@ -97,6 +99,7 @@ LEFT JOIN AD_Org ot ON (ot.AD_Org_ID = io.AD_OrgTrx_ID)
 INNER JOIN AD_OrgInfo oi ON (oi.AD_Org_ID = org.AD_Org_ID)
 LEFT JOIN C_OrderLine ol ON (ol.C_OrderLine_ID = iol.C_OrderLine_ID)
 LEFT JOIN C_Order o ON (o.C_Order_ID = ol.C_Order_ID)
+LEFT JOIN C_Order oq ON (oq.C_Order_ID = o.QuotationOrder_ID)
 LEFT JOIN M_Product p ON (p.M_Product_ID = COALESCE(ol.RelatedProduct_ID,iol.M_Product_ID))
 LEFT JOIN AD_User u ON (u.AD_User_ID = io.AD_User_ID)
 LEFT JOIN C_BPartner_Location bpl ON (bpl.C_BPartner_Location_ID = io.C_BPartner_Location_ID)
@@ -158,6 +161,8 @@ ORDER BY iol.line]]>
 	<field name="greeting" class="java.lang.String"/>
 	<field name="doctype_id" class="java.math.BigDecimal"/>
 	<field name="flnstatus" class="java.lang.String"/>
+	<field name="sales_name" class="java.lang.String"/>
+	<field name="so_createdby" class="java.lang.String"/>
 	<variable name="ISZERO" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{unitsperpallet}.equals( BigDecimal.valueOf(0) )]]></variableExpression>
 	</variable>
@@ -491,7 +496,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
 || $F{bp_value}.equals("13539")) & $F{netdays}.doubleValue() == 0)?
-"Top / GrandTotal" : (($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
+"TOP / Grand Total" : (($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
 || $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
 || $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
 || $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
@@ -516,7 +521,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))) ? "Top" : ""]]></textFieldExpression>
+|| $F{bp_value}.equals("13539"))) ? "TOP" : ""]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement uuid="376a020d-1555-4663-b4ff-da24aa8749a3" style="Default" x="414" y="125" width="10" height="15">
@@ -678,14 +683,14 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<textFieldExpression><![CDATA[$F{docstatus}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement uuid="e0bb45ec-5f07-4b4d-a00d-edf334e13235" x="555" y="78" width="40" height="12"/>
+				<reportElement uuid="e0bb45ec-5f07-4b4d-a00d-edf334e13235" x="555" y="61" width="40" height="12"/>
 				<textElement verticalAlignment="Bottom">
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="e8a1bfdc-4e31-4a39-b55e-8e52c281472b" x="475" y="78" width="80" height="12"/>
+				<reportElement uuid="e8a1bfdc-4e31-4a39-b55e-8e52c281472b" x="475" y="61" width="80" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font size="8" isItalic="true"/>
 				</textElement>
@@ -728,7 +733,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<text><![CDATA[*Dengan ditanda tangani surat jalan ini, Bapak/Ibu sudah menerima invoice copy.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d4d5e5ee-0dc3-42d8-9c58-e1543ef8d374" x="543" y="66" width="52" height="12" isRemoveLineWhenBlank="true">
+				<reportElement uuid="d4d5e5ee-0dc3-42d8-9c58-e1543ef8d374" x="543" y="49" width="52" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
 || $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
 || $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
@@ -763,7 +768,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<text><![CDATA[XLINE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="0fb90c13-9d72-4e47-8177-567bf0a18d02" positionType="FixRelativeToBottom" x="543" y="43" width="52" height="23" isRemoveLineWhenBlank="true">
+				<reportElement uuid="0fb90c13-9d72-4e47-8177-567bf0a18d02" positionType="FixRelativeToBottom" x="543" y="34" width="52" height="15" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
 || $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
 || $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
@@ -834,6 +839,42 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<textFieldExpression><![CDATA[$F{deliveryrule}.equalsIgnoreCase( "1" )?"XLINE":
 ($F{istest}.equalsIgnoreCase( "Y" )?"Customer Walk IN":"")]]></textFieldExpression>
 			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="348a851f-ffa8-41d6-a295-02bce43b08ed" positionType="FixRelativeToBottom" x="495" y="73" width="100" height="17" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
+|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
+|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
+|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
+|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
+|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
+|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
+|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
+|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
+|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
+|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
+|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
+|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
+|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
+|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
+|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
+|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
+|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
+|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
+|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
+|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
+|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
+|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
+|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
+|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
+|| $F{bp_value}.equals("13539"))]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Right">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sales_name}.replaceAll("[0-9-]", "") +
+" / "+$F{so_createdby}.replaceAll("[0-9-]", "")]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<lastPageFooter>
@@ -848,21 +889,21 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<textFieldExpression><![CDATA[$F{docstatus}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="951e8680-4888-443b-93da-78d08bcc2542" x="475" y="78" width="80" height="12"/>
+				<reportElement uuid="951e8680-4888-443b-93da-78d08bcc2542" x="475" y="61" width="80" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement uuid="4e6d7fa1-8a46-47e3-90fe-5a9c098afdb6" x="555" y="78" width="40" height="12"/>
+				<reportElement uuid="4e6d7fa1-8a46-47e3-90fe-5a9c098afdb6" x="555" y="61" width="40" height="12"/>
 				<textElement verticalAlignment="Bottom">
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="8541152b-587c-432a-bdc2-7d4b8cfb551d" positionType="FixRelativeToBottom" x="543" y="43" width="52" height="23" isRemoveLineWhenBlank="true">
+				<reportElement uuid="8541152b-587c-432a-bdc2-7d4b8cfb551d" positionType="FixRelativeToBottom" x="543" y="34" width="52" height="15" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
 || $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
 || $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
@@ -934,7 +975,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 ($F{istest}.equalsIgnoreCase( "Y" )?"Customer Walk IN":"")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="92a1cb4c-4e9b-408f-9e1c-c0816e026389" x="543" y="66" width="52" height="12" isRemoveLineWhenBlank="true">
+				<reportElement uuid="92a1cb4c-4e9b-408f-9e1c-c0816e026389" x="543" y="49" width="52" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
 || $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
 || $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
@@ -1004,6 +1045,42 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				</textElement>
 				<text><![CDATA[*Dengan ditanda tangani surat jalan ini, Bapak/Ibu sudah menerima invoice copy.]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d259d5e3-62fb-47b9-a248-db13f9169c49" positionType="FixRelativeToBottom" x="495" y="73" width="100" height="17" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
+|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
+|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
+|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
+|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
+|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
+|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
+|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
+|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
+|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
+|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
+|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
+|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
+|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
+|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
+|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
+|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
+|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
+|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
+|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
+|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
+|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
+|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
+|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
+|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
+|| $F{bp_value}.equals("13539"))]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Right">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sales_name}.replaceAll("[0-9-]", "") +
+" / "+$F{so_createdby}.replaceAll("[0-9-]", "")]]></textFieldExpression>
+			</textField>
 		</band>
 	</lastPageFooter>
 </jasperReport>
