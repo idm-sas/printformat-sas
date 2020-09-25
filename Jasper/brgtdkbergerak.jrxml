@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="brgtdkbergerak" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="92d448d9-159b-4e75-9e4e-1b03268cc69f">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="AD_Client_ID" class="java.math.BigDecimal" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="AD_Org_ID" class="java.math.BigDecimal" isForPrompting="false">
+		<defaultValueExpression><![CDATA[1000003]]></defaultValueExpression>
+	</parameter>
+	<parameter name="M_PriceList_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000017]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DateFrom" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[2010/01/01]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DateTo" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[2010/12/30]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select p.ad_client_id, str.ad_org_id, org.name as organization, p.m_product_id, p.name as productname, p.value as codeproduct,
+loc.value as locator, w.name as warehouse,
+str.qtyonhand, pp.pricelist, str.qtyonhand*pp.pricelist as value
+from m_product p
+join m_storage str on p.m_product_id=str.m_product_id
+join m_locator loc on str.m_locator_id=loc.m_locator_id
+join m_warehouse w on loc.m_warehouse_id=w.m_warehouse_id
+join m_productprice pp on p.m_product_id=pp.m_product_id
+join m_pricelist_version pv on pp.m_pricelist_version_id=pv.m_pricelist_version_id
+join ad_org org on str.ad_org_id=org.ad_org_id
+where not exists (
+Select * from c_invoiceline il
+join c_invoice i on il.c_invoice_id=i.c_invoice_id
+where p.m_product_id=il.m_product_id
+and i.dateinvoiced between $P{DateFrom} and $P{DateTo}
+)
+and pv.m_pricelist_id=$P{M_PriceList_ID}
+order by p.m_product_id]]>
+	</queryString>
+	<field name="ad_client_id" class="java.math.BigDecimal"/>
+	<field name="ad_org_id" class="java.math.BigDecimal"/>
+	<field name="organization" class="java.lang.String"/>
+	<field name="m_product_id" class="java.math.BigDecimal"/>
+	<field name="productname" class="java.lang.String"/>
+	<field name="codeproduct" class="java.lang.String"/>
+	<field name="locator" class="java.lang.String"/>
+	<field name="warehouse" class="java.lang.String"/>
+	<field name="qtyonhand" class="java.math.BigDecimal"/>
+	<field name="pricelist" class="java.math.BigDecimal"/>
+	<field name="value" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="24" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="8602d5c1-9422-4082-ae7d-d7891c6511ab" x="0" y="0" width="802" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Laporan Stock Barang Tidak Bergerak]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="2ea2a344-eb4a-49c2-a193-2a62a25be783" x="536" y="0" width="89" height="20"/>
+				<textElement/>
+				<text><![CDATA[Harga Satuan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d8f279d0-8a92-4422-ac69-dd19152992ca" x="625" y="0" width="41" height="20"/>
+				<textElement/>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="13950cfc-e265-4503-81b9-5b559f99ded9" x="666" y="0" width="136" height="20"/>
+				<textElement/>
+				<text><![CDATA[Nilai]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="51525b72-5dd0-49d0-bb5f-14c80c008773" x="80" y="0" width="59" height="20"/>
+				<textElement/>
+				<text><![CDATA[Kode Brg]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="aec39a32-cc30-4224-8ba2-953c33136d0b" x="139" y="0" width="201" height="20"/>
+				<textElement/>
+				<text><![CDATA[Nama Barang]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c9d82d72-b980-45e9-966a-e4d48ae09fc6" x="425" y="0" width="111" height="20"/>
+				<textElement/>
+				<text><![CDATA[Locator]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="462cf187-df2b-43b5-959d-be8b45a85866" x="340" y="0" width="85" height="20"/>
+				<textElement/>
+				<text><![CDATA[Warehouse]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a8b50b50-0fb7-418b-915f-750acbcc2c68" x="0" y="0" width="80" height="20"/>
+				<textElement/>
+				<text><![CDATA[Organization]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="28" splitType="Stretch">
+			<textField>
+				<reportElement uuid="2b140c35-6361-4a30-afc5-69b3b41111df" x="536" y="3" width="89" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{pricelist}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement uuid="75b1274f-5983-4e97-9886-412641901501" x="666" y="0" width="136" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="38333c31-e343-425d-b17e-f376c14113f3" x="625" y="3" width="41" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{qtyonhand}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="9cb62621-e554-46af-9035-5ff3b707281e" x="0" y="3" width="80" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{organization}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="f6716701-9373-4d86-8131-3fd3c05a0d99" x="80" y="3" width="59" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{codeproduct}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="9a2a14ad-fc3b-4a33-8589-de9efba740b1" x="139" y="3" width="201" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{productname}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="f60a4200-cdc6-41c7-9ccd-eb6695ea08a8" x="340" y="3" width="85" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{warehouse}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="ccc5dffc-6160-42ca-8ec9-1bafc8451a48" x="425" y="3" width="111" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{locator}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

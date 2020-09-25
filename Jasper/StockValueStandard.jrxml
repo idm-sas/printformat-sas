@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="StockValue" language="groovy" pageWidth="1190" pageHeight="842" orientation="Landscape" columnWidth="1150" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="206d62e6-e5cc-42d7-bad5-ae2d6c4305c5">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="1074"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="sas"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="137"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="856"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="1000"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="0"/>
+	<parameter name="AD_CLIENT_ID" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[1000001]]></defaultValueExpression>
+	</parameter>
+	<parameter name="M_Product_ID" class="java.lang.Integer"/>
+	<parameter name="DateAcct" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[SELECT
+	z.Value,
+	z.Name,
+	SUM(COALESCE(z.Qty,0)) AS Qty,
+	SUM(COALESCE(z.ProductAsset,0)) AS ProductAsset,
+	SUM(COALESCE(z.CostAdjustment,0)) AS CostAdjustment,
+	SUM(COALESCE(z.InvoicePriceVariance,0)) AS InvoicePriceVariance,
+	z.NewCostPrice
+FROM
+(
+SELECT
+	p.Value,
+	p.Name,
+	0 AS Qty,
+	0 AS ProductAsset,
+	0 AS CostAdjustment,
+	0 AS InvoicePriceVariance,
+	il.NewCostPrice
+FROM M_Product p
+INNER JOIN M_Product_Acct pa ON (pa.M_Product_ID = p.M_Product_ID)
+LEFT JOIN M_InventoryLine il ON (il.M_Product_ID = p.M_Product_ID)
+WHERE p.AD_Client_ID = COALESCE($P{AD_CLIENT_ID},1000001)
+AND p.M_Product_ID = COALESCE($P{M_Product_ID},p.M_Product_ID)
+AND il.Created = (SELECT
+			MAX(mil.Created)
+			FROM M_InventoryLine mil
+			INNER JOIN M_Inventory i ON mil.M_Inventory_ID = i.M_Inventory_ID
+			WHERE mil.M_Product_ID = il.M_Product_ID
+			AND i.Docstatus = 'CO'
+			AND i.C_Doctype_ID = 550298
+			AND i.CostingMethod = 'S'
+			AND mil.Created <= $P{DateAcct})
+AND p.IsActive='Y'
+
+UNION ALL
+
+SELECT
+	p.Value,
+	p.Name,
+	SUM(fa.Qty) AS Qty,
+	SUM(fa.AmtAcctDr - fa.AmtAcctCr) AS ProductAsset,
+	0 AS CostAdjustment,
+	0 AS InvoicePriceVariance,
+	il.NewCostPrice
+FROM M_Product p
+INNER JOIN M_Product_Acct pa ON (pa.M_Product_ID = p.M_Product_ID)
+INNER JOIN C_ValidCombination vc ON (vc.C_ValidCombination_ID = pa.P_Asset_Acct)
+INNER JOIN Fact_Acct fa ON (fa.M_Product_ID = p.M_Product_ID AND fa.Account_ID = vc.Account_ID)
+LEFT JOIN M_InventoryLine il ON (il.M_Product_ID = p.M_Product_ID)
+WHERE p.AD_Client_ID = COALESCE($P{AD_CLIENT_ID},1000001)
+AND p.M_Product_ID = COALESCE($P{M_Product_ID},p.M_Product_ID)
+AND fa.DateAcct <= COALESCE($P{DateAcct},fa.DateAcct)
+AND il.Created = (SELECT
+			MAX(mil.Created)
+			FROM M_InventoryLine mil
+			INNER JOIN M_Inventory i ON mil.M_Inventory_ID = i.M_Inventory_ID
+			WHERE mil.M_Product_ID = il.M_Product_ID
+			AND i.Docstatus = 'CO'
+			AND i.C_Doctype_ID = 550298
+			AND i.CostingMethod = 'S'
+			AND mil.Created <= $P{DateAcct})
+AND p.IsActive='Y'
+GROUP BY p.Value,p.Name,il.NewCostPrice
+
+UNION ALL
+
+SELECT
+	p.Value,
+	p.Name,
+	0 AS Qty,
+	0 AS ProductAsset,
+	SUM(fa.AmtAcctDr - fa.AmtAcctCr) AS CostAdjustment,
+	0 AS InvoicePriceVariance,
+	il.NewCostPrice
+FROM M_Product p
+INNER JOIN M_Product_Acct pa ON (pa.M_Product_ID = p.M_Product_ID)
+INNER JOIN C_ValidCombination vc ON (vc.C_ValidCombination_ID = pa.P_CostAdjustment_Acct)
+INNER JOIN Fact_Acct fa ON (fa.M_Product_ID = p.M_Product_ID AND fa.Account_ID = vc.Account_ID)
+LEFT JOIN M_InventoryLine il ON (il.M_Product_ID = p.M_Product_ID)
+WHERE p.AD_Client_ID = COALESCE($P{AD_CLIENT_ID},1000001)
+AND p.M_Product_ID = COALESCE($P{M_Product_ID},p.M_Product_ID)
+AND fa.DateAcct <= COALESCE($P{DateAcct},fa.DateAcct)
+AND il.Created = (SELECT
+			MAX(mil.Created)
+			FROM M_InventoryLine mil
+			INNER JOIN M_Inventory i ON mil.M_Inventory_ID = i.M_Inventory_ID
+			WHERE mil.M_Product_ID = il.M_Product_ID
+			AND i.Docstatus = 'CO'
+			AND i.C_Doctype_ID = 550298
+			AND i.CostingMethod = 'S'
+			AND mil.Created <= $P{DateAcct})
+AND p.IsActive='Y'
+GROUP BY p.Value,p.Name,il.NewCostPrice
+
+UNION ALL
+
+SELECT
+	p.Value,
+	p.Name,
+	0 AS Qty,
+	0 AS ProductAsset,
+	0 AS CostAdjustment,
+	SUM(fa.AmtAcctDr - fa.AmtAcctCr) AS InvoicePriceVariance,
+	il.NewCostPrice
+FROM M_Product p
+INNER JOIN M_Product_Acct pa ON (pa.M_Product_ID = p.M_Product_ID)
+INNER JOIN C_ValidCombination vc ON (vc.C_ValidCombination_ID = pa.P_InvoicePriceVariance_Acct)
+INNER JOIN Fact_Acct fa ON (fa.M_Product_ID = p.M_Product_ID AND fa.Account_ID = vc.Account_ID)
+LEFT JOIN M_InventoryLine il ON (il.M_Product_ID = p.M_Product_ID)
+WHERE p.AD_Client_ID = COALESCE($P{AD_CLIENT_ID},1000001)
+AND p.M_Product_ID = COALESCE($P{M_Product_ID},p.M_Product_ID)
+AND fa.DateAcct <= COALESCE($P{DateAcct},fa.DateAcct)
+AND il.Created = (SELECT
+			MAX(mil.Created)
+			FROM M_InventoryLine mil
+			INNER JOIN M_Inventory i ON mil.M_Inventory_ID = i.M_Inventory_ID
+			WHERE mil.M_Product_ID = il.M_Product_ID
+			AND i.Docstatus = 'CO'
+			AND i.C_Doctype_ID = 550298
+			AND i.CostingMethod = 'S'
+			AND mil.Created <= $P{DateAcct})
+AND p.IsActive='Y'
+GROUP BY p.Value,p.Name,il.NewCostPrice
+) z
+GROUP BY z.Value,z.Name,z.NewCostPrice
+ORDER BY z.Value]]>
+	</queryString>
+	<field name="value" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="qty" class="java.math.BigDecimal"/>
+	<field name="productasset" class="java.math.BigDecimal"/>
+	<field name="costadjustment" class="java.math.BigDecimal"/>
+	<field name="invoicepricevariance" class="java.math.BigDecimal"/>
+	<field name="newcostprice" class="java.math.BigDecimal"/>
+	<variable name="TOTAL" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{productasset} + $F{costadjustment} + $F{invoicepricevariance}]]></variableExpression>
+	</variable>
+	<variable name="COST" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{qty}==0 ? 0 : $V{TOTAL}/$F{qty}]]></variableExpression>
+	</variable>
+	<variable name="GRANDTOTAL" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$V{TOTAL}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="100" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="d1f60ddb-5011-4725-8f50-8e7a586c285a" x="0" y="0" width="1150" height="40"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[STOCK VALUE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b9bbedbb-4522-46ec-80d9-9d84ff177c26" x="0" y="60" width="140" height="20" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{M_Product_ID} > 0]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4f1a4443-e8f7-4b72-98d6-6cdd857865db" stretchType="RelativeToTallestObject" x="0" y="80" width="140" height="20" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{DateAcct} != null]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="56e9f46d-14f9-41f0-b401-7567938203cb" stretchType="RelativeToTallestObject" x="140" y="60" width="310" height="20" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{M_Product_ID} > 0]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement uuid="ff59679c-0ceb-4f37-815a-0fed0fe0cb34" stretchType="RelativeToTallestObject" x="140" y="80" width="310" height="20" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{DateAcct} != null]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{DateAcct}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="44aaec12-0cd1-4188-ab35-611a271aeea0" x="0" y="0" width="40" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f82a4e91-39bf-4927-9652-3aaa62a25e5a" x="40" y="0" width="100" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6355b274-4e03-4ddf-be3e-83b815c9f4c4" x="140" y="0" width="361" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ae33fab2-6d49-4bc7-ae4a-6777e6fd8efc" x="501" y="0" width="100" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Qty]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4e15e410-ff53-4b20-a931-7df5e2b903e3" x="601" y="0" width="100" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Asset]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7942a155-bba7-41df-8b57-1989100d5e1a" x="701" y="0" width="100" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cost Adjustment]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="53652659-e624-4ae5-bc02-1a578142a702" x="801" y="0" width="100" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Invoice Variance]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="af753f2e-4259-4d19-9723-299420d461e3" x="981" y="0" width="87" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6f51ed90-b5a2-4100-a239-e6788789b927" x="901" y="0" width="80" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Standar Cost]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="62ce9d50-3b07-4102-95d9-2ea45d814d37" x="1068" y="0" width="82" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<pen lineStyle="Solid"/>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cost]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="614da919-138a-4140-98a0-ef0fef8b61a9" stretchType="RelativeToTallestObject" x="0" y="0" width="40" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="e5a07107-2c9c-4057-8de4-5c7f0b8903a9" stretchType="RelativeToTallestObject" x="40" y="0" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="465d1a46-b1ee-44ce-9e57-f3e06007f81f" stretchType="RelativeToTallestObject" x="140" y="0" width="361" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="0343c702-c044-4ade-879b-3cfbaf9b6da3" stretchType="RelativeToTallestObject" x="501" y="0" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{qty}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d8bfbb5e-4cc0-4226-bc86-61ad570366d7" stretchType="RelativeToTallestObject" x="601" y="0" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{productasset}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="2ccb68fd-defe-4bf6-8712-aa23730fa59a" stretchType="RelativeToTallestObject" x="701" y="0" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{costadjustment}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="7215c480-e890-49d5-b899-2d7297a1f80b" stretchType="RelativeToTallestObject" x="801" y="0" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{invoicepricevariance}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="22891dc0-3585-4854-a5b5-484d84e43e84" stretchType="RelativeToTallestObject" x="981" y="0" width="87" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{TOTAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="22891dc0-3585-4854-a5b5-484d84e43e84" stretchType="RelativeToTallestObject" x="1068" y="0" width="82" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{COST}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="ca415254-bb48-46eb-bc9a-56c3017d517b" stretchType="RelativeToTallestObject" x="901" y="0" width="80" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="2" rightPadding="2">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{newcostprice}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="af753f2e-4259-4d19-9723-299420d461e3" x="0" y="0" width="981" height="20"/>
+				<box leftPadding="2" rightPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Grandtotal]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="22891dc0-3585-4854-a5b5-484d84e43e84" stretchType="RelativeToTallestObject" x="981" y="0" width="87" height="20" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{GRANDTOTAL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
