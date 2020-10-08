@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SuratJalan" language="groovy" pageWidth="609" pageHeight="392" columnWidth="595" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" isSummaryWithPageHeaderAndFooter="true" uuid="328eb258-edbc-400a-986e-092bec7c3f0c">
 	<property name="ireport.zoom" value="1.2396694214876043"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="114"/>
+	<property name="ireport.y" value="48"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2"/>
 	</style>
@@ -391,7 +391,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539")) & $F{flnstatus} == null ||
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & $F{flnstatus} == null ||
 (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297)]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Left">
@@ -435,7 +435,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539")) ? $F{netdays} + " days" : "")
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) ? $F{netdays} + " days" : "")
 + (($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
 || $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
 || $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
@@ -461,7 +461,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539")) & $F{netdays}.doubleValue() == 0 ?
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & $F{netdays}.doubleValue() == 0 ?
   (" / "+ "Rp. " + new java.text.DecimalFormat("#,##0").format(Double.valueOf($F{grandtotal})))
    : "")]]></textFieldExpression>
 			</textField>
@@ -495,7 +495,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539")) & $F{netdays}.doubleValue() == 0)?
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & $F{netdays}.doubleValue() == 0)?
 "TOP / Grand Total" : (($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
 || $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
 || $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
@@ -521,7 +521,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))) ? "TOP" : ""]]></textFieldExpression>
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))) ? "TOP" : ""]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement uuid="376a020d-1555-4663-b4ff-da24aa8749a3" style="Default" x="414" y="125" width="10" height="15">
@@ -550,7 +550,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539")) & ($F{flnstatus} == null
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & ($F{flnstatus} == null
 || (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Top">
@@ -723,7 +723,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539")) & ($F{flnstatus} == null ||
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & ($F{flnstatus} == null ||
 (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -759,7 +759,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))
 & $F{priorityrule}.equalsIgnoreCase ("1")]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -794,7 +794,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))
 & $F{istodayfp}.equalsIgnoreCase( "Y" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -830,7 +830,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))]]></printWhenExpression>
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Right">
@@ -866,7 +866,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))]]></printWhenExpression>
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Right">
@@ -929,7 +929,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))
 & $F{istodayfp}.equalsIgnoreCase( "Y" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -965,7 +965,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))]]></printWhenExpression>
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Right">
@@ -1001,7 +1001,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))
 & $F{priorityrule}.equalsIgnoreCase ("1")]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -1036,7 +1036,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539")) & ($F{flnstatus} == null ||
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & ($F{flnstatus} == null ||
 (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -1072,7 +1072,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 || $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
 || $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
 || $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))]]></printWhenExpression>
+|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Right">
