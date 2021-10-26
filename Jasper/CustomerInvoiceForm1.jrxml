@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CustomerInvoiceForm" pageWidth="694" pageHeight="396" whenNoDataType="AllSectionsNoDetail" columnWidth="686" leftMargin="4" rightMargin="4" topMargin="5" bottomMargin="4" isSummaryWithPageHeaderAndFooter="true" uuid="5c6c75a0-b489-4742-a475-51ad62c3a1fc">
-	<property name="ireport.zoom" value="1.1269722013523706"/>
+	<property name="ireport.zoom" value="0.9313819845887361"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="96"/>
+	<property name="ireport.y" value="324"/>
 	<subDataset name="PAGAR" whenResourceMissingType="Empty" uuid="45e6538e-8ccc-4142-a695-5d8280426ed6">
 		<parameter name="RECORD_ID" class="java.lang.Integer" isForPrompting="false"/>
 		<parameter name="C_Invoice_ID" class="java.math.BigDecimal" isForPrompting="false"/>
@@ -139,7 +139,8 @@ AND p.Group2 IN ('Y GIMMICK','Y POIN')]]>
 	ROUND(COALESCE(CASE WHEN i.c_doctypetarget_id=1000002 OR i.c_doctypetarget_id=1000004 THEN pp.pricelist/1.1
 	ELSE pp.pricelist END, 0),2) AS PAKET_PRICE,
 	g.name Greeting,
-	(SELECT MAX(ux.Name) FROM AD_User ux INNER JOIN C_BPartner bpbx ON (bpbx.C_BPartner_ID = ux.C_BPartner_ID) WHERE bpbx.C_BPartner_ID = bp.Billing_ID) BILLING_USERNAME
+	(SELECT MAX(ux.Name) FROM AD_User ux INNER JOIN C_BPartner bpbx ON (bpbx.C_BPartner_ID = ux.C_BPartner_ID) WHERE bpbx.C_BPartner_ID = bp.Billing_ID) BILLING_USERNAME,
+	bp.C_BP_Group_ID
 FROM C_InvoiceLine il
 INNER JOIN C_Invoice i ON (i.C_Invoice_ID = il.C_Invoice_ID)
 LEFT JOIN C_PaymentTerm pt ON (pt.C_PaymentTerm_ID = i.C_PaymentTerm_ID)
@@ -274,6 +275,7 @@ ORDER BY il.Line]]>
 	<field name="paket_price" class="java.math.BigDecimal"/>
 	<field name="greeting" class="java.lang.String"/>
 	<field name="billing_username" class="java.lang.String"/>
+	<field name="c_bp_group_id" class="java.math.BigDecimal"/>
 	<variable name="NO_URUT" class="java.lang.Integer" calculation="Sum">
 		<variableExpression><![CDATA[($F{product_name}!=null & $F{m_product_category_id}.intValue()!=1000011) |
 ($F{product_name}==null & $F{c_charge_id}==null & $F{isdescription}.equalsIgnoreCase( "N" )) &
@@ -529,7 +531,7 @@ $F{product_name}.endsWith( "@1" ) ? ("- Roll")
 				<imageExpression><![CDATA["http://erp:8090/jasper/logo-sa.png"]]></imageExpression>
 			</image>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="de2e6fa1-3daf-437e-8ca8-793a2bf34b5b" x="1" y="186" width="653" height="104" forecolor="#CCCCCC">
+				<reportElement uuid="de2e6fa1-3daf-437e-8ca8-793a2bf34b5b" x="2" y="152" width="653" height="104" forecolor="#FF0000">
 					<printWhenExpression><![CDATA[!$F{docstatus}.equals( "CO" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -538,13 +540,22 @@ $F{product_name}.endsWith( "@1" ) ? ("- Roll")
 				<textFieldExpression><![CDATA["COMPLETE DULU"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Page" isBlankWhenNull="true">
-				<reportElement uuid="de2e6fa1-3daf-437e-8ca8-793a2bf34b5b" x="0" y="82" width="653" height="104" forecolor="#CCCCCC">
+				<reportElement uuid="de2e6fa1-3daf-437e-8ca8-793a2bf34b5b" x="0" y="48" width="653" height="104" forecolor="#FF0000">
 					<printWhenExpression><![CDATA[$F{ispreview}]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
 					<font size="62"/>
 				</textElement>
 				<textFieldExpression><![CDATA["PREVIEW"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="9648b65f-def8-483f-8859-0dcc12b9940d" stretchType="RelativeToBandHeight" x="2" y="256" width="684" height="104" forecolor="#FF0000">
+					<printWhenExpression><![CDATA[$F{c_bp_group_id}.doubleValue() == 2200056]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="62"/>
+				</textElement>
+				<textFieldExpression><![CDATA["JANGAN DIPROSES !"]]></textFieldExpression>
 			</textField>
 		</band>
 	</background>
