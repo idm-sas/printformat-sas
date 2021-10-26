@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CustomerInvoiceForm" pageWidth="694" pageHeight="396" whenNoDataType="AllSectionsNoDetail" columnWidth="686" leftMargin="4" rightMargin="4" topMargin="5" bottomMargin="4" isSummaryWithPageHeaderAndFooter="true" uuid="5c6c75a0-b489-4742-a475-51ad62c3a1fc">
 	<property name="ireport.zoom" value="0.9313819845887361"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="324"/>
+	<property name="ireport.y" value="0"/>
 	<subDataset name="PAGAR" whenResourceMissingType="Empty" uuid="45e6538e-8ccc-4142-a695-5d8280426ed6">
 		<parameter name="RECORD_ID" class="java.lang.Integer" isForPrompting="false"/>
 		<parameter name="C_Invoice_ID" class="java.math.BigDecimal" isForPrompting="false"/>
@@ -623,7 +623,9 @@ $F{product_name}.endsWith( "@1" ) ? ("- Roll")
 				<textFieldExpression><![CDATA[$F{poreference}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement uuid="d4006816-39da-4e90-a575-e21efbe0357e" x="381" y="31" width="305" height="70"/>
+				<reportElement uuid="d4006816-39da-4e90-a575-e21efbe0357e" x="381" y="31" width="305" height="70">
+					<printWhenExpression><![CDATA[$F{c_bp_group_id}.doubleValue() != 2200056]]></printWhenExpression>
+				</reportElement>
 				<textElement markup="html">
 					<font size="17"/>
 				</textElement>
