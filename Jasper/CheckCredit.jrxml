@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CheckCredit" language="groovy" pageWidth="1296" pageHeight="842" columnWidth="1256" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a6ea1ed3-01d5-4240-993c-144391e53bda">
-	<property name="ireport.zoom" value="5.5599173134922575"/>
-	<property name="ireport.x" value="3482"/>
-	<property name="ireport.y" value="1318"/>
+	<property name="ireport.zoom" value="0.8250000000000082"/>
+	<property name="ireport.x" value="172"/>
+	<property name="ireport.y" value="0"/>
 	<subDataset name="SO" uuid="6bcda85a-2e1d-4d0f-a7de-b01e5ab06229">
 		<parameter name="C_BPartner_ID" class="java.math.BigDecimal">
 			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
@@ -208,7 +208,7 @@ ORDER BY p.DateTrx]]>
 		<queryString>
 			<![CDATA[SELECT
 	CASE WHEN orgt.AD_Org_ID=0 THEN '-' ELSE orgt.Name END ORGTRX,
-	pt.Name PAYMENTTERM,
+	pt.Netdays PAYMENTTERM,
 	sr.Name SALESREP,
 	br.SO_CreditLimit,
 	(SELECT COALESCE(SUM((olx.QtyOrdered-olx.QtyInvoiced) * olx.PriceActual),0)
@@ -260,7 +260,7 @@ ORDER BY p.DateTrx]]>
 	INNER JOIN C_DocType dtx ON (dtx.C_DocType_ID = ix.C_DocType_ID)
 	INNER JOIN C_AllocationLine alx ON (alx.C_Invoice_ID = ix.C_Invoice_ID)
 	INNER JOIN C_AllocationHdr alhx ON (alhx.C_AllocationHdr_ID = alx.C_AllocationHdr_ID)
-	--INNER JOIN C_allocationLine alpx ON (alpx.C_AllocationHdr_ID = alhx.C_AllocationHdr_ID)
+	--INNER JOIN C_allocationLine alpx ON (alpx.C_AllocationHdr_ID = lhx.C_AllocationHdr_ID)
 	--INNER JOIN C_Payment px ON (px.C_Payment_ID = alpx.C_Payment_ID)
 	WHERE alhx.DocStatus IN ('CO','CL')
 	AND ix.IsSOTrx='Y'
@@ -270,6 +270,7 @@ ORDER BY p.DateTrx]]>
 	AND ix.IsPaid = 'Y'
 	AND ix.C_BPartner_ID = bp.C_BPartner_ID
 	AND COALESCE(ix.AD_OrgTrx_ID,0) = orgt.AD_Org_ID
+   	AND ix.C_PaymentTerm_ID = br.C_PaymentTerm_ID
 	) AVG_PAY,
 	(SELECT AVG(EXTRACT(DAY FROM alhx.DateAcct - ix.DateInvoiced))
 	FROM C_Invoice ix
@@ -287,6 +288,7 @@ ORDER BY p.DateTrx]]>
 	AND ix.C_BPartner_ID = bp.C_BPartner_ID
 	AND COALESCE(ix.AD_OrgTrx_ID,0) = orgt.AD_Org_ID
 	AND ix.DateInvoiced >= ADDDAYS(CURRENT_DATE,-90)
+   	AND ix.C_PaymentTerm_ID = br.C_PaymentTerm_ID
 	) AVG_PAY_90,
 	(SELECT AVG(EXTRACT(DAY FROM alhx.DateAcct - ix.DateInvoiced))
 	FROM C_Invoice ix
@@ -304,6 +306,7 @@ ORDER BY p.DateTrx]]>
 	AND ix.C_BPartner_ID = bp.C_BPartner_ID
 	AND COALESCE(ix.AD_OrgTrx_ID,0) = orgt.AD_Org_ID
 	AND ix.DateInvoiced >= ADDDAYS(CURRENT_DATE,-180)
+    	AND ix.C_PaymentTerm_ID = br.C_PaymentTerm_ID
 	) AVG_PAY_180,
 	(SELECT COALESCE(SUM(ix.GrandTotal),0)
 	FROM RV_C_Invoice ix
@@ -359,7 +362,51 @@ ORDER BY p.DateTrx]]>
 	AND alhx.DocStatus IN ('CO','CL')
 	AND px.C_BPartner_ID = bp.C_BPartner_ID
 	AND COALESCE(px.AD_OrgTrx_ID,0) = orgt.AD_Org_ID
-	) TOTAL_GIRO_ALLOCATED
+	) TOTAL_GIRO_ALLOCATED,
+    	(SELECT AVG(EXTRACT(DAY FROM alhx.DateAcct - ix.DateInvoiced))
+	FROM C_Invoice ix
+	INNER JOIN C_DocType dtx ON (dtx.C_DocType_ID = ix.C_DocType_ID)
+	INNER JOIN C_AllocationLine alx ON (alx.C_Invoice_ID = ix.C_Invoice_ID)
+	INNER JOIN C_AllocationHdr alhx ON (alhx.C_AllocationHdr_ID = alx.C_AllocationHdr_ID)
+	WHERE alhx.DocStatus IN ('CO','CL')
+	AND ix.IsSOTrx='Y'
+	AND NOT (dtx.DocBaseType = 'ARC' OR dtx.C_DocType_ID IN (550294,550293))
+	AND ix.DocStatus IN ('CO','CL')
+	AND ix.IsPaid = 'Y'
+	AND ix.C_BPartner_ID = bp.C_BPartner_ID
+	AND COALESCE(ix.AD_OrgTrx_ID,0) = orgt.AD_Org_ID
+    	AND ix.C_PaymentTerm_ID <> br.C_PaymentTerm_ID
+	) AVG_PAY_NOT_TOP,
+	(SELECT AVG(EXTRACT(DAY FROM alhx.DateAcct - ix.DateInvoiced))
+	FROM C_Invoice ix
+	INNER JOIN C_DocType dtx ON (dtx.C_DocType_ID = ix.C_DocType_ID)
+	INNER JOIN C_AllocationLine alx ON (alx.C_Invoice_ID = ix.C_Invoice_ID)
+	INNER JOIN C_AllocationHdr alhx ON (alhx.C_AllocationHdr_ID = alx.C_AllocationHdr_ID)
+	WHERE alhx.DocStatus IN ('CO','CL')
+	AND ix.IsSOTrx='Y'
+	AND NOT (dtx.DocBaseType = 'ARC' OR dtx.C_DocType_ID IN (550294,550293))
+	AND ix.DocStatus IN ('CO','CL')
+	AND ix.IsPaid = 'Y'
+	AND ix.C_BPartner_ID = bp.C_BPartner_ID
+	AND COALESCE(ix.AD_OrgTrx_ID,0) = orgt.AD_Org_ID
+	AND ix.DateInvoiced >= ADDDAYS(CURRENT_DATE,-90)
+    	AND ix.C_PaymentTerm_ID <> br.C_PaymentTerm_ID
+	) AVG_PAY_90_NOT_TOP,
+	(SELECT AVG(EXTRACT(DAY FROM alhx.DateAcct - ix.DateInvoiced))
+	FROM C_Invoice ix
+	INNER JOIN C_DocType dtx ON (dtx.C_DocType_ID = ix.C_DocType_ID)
+	INNER JOIN C_AllocationLine alx ON (alx.C_Invoice_ID = ix.C_Invoice_ID)
+	INNER JOIN C_AllocationHdr alhx ON (alhx.C_AllocationHdr_ID = alx.C_AllocationHdr_ID)
+	WHERE alhx.DocStatus IN ('CO','CL')
+	AND ix.IsSOTrx='Y'
+	AND NOT (dtx.DocBaseType = 'ARC' OR dtx.C_DocType_ID IN (550294,550293))
+	AND ix.DocStatus IN ('CO','CL')
+	AND ix.IsPaid = 'Y'
+	AND ix.C_BPartner_ID = bp.C_BPartner_ID
+	AND COALESCE(ix.AD_OrgTrx_ID,0) = orgt.AD_Org_ID
+	AND ix.DateInvoiced >= ADDDAYS(CURRENT_DATE,-180)
+   	AND ix.C_PaymentTerm_ID <> br.C_PaymentTerm_ID
+	) AVG_PAY_180_NOT_TOP
 FROM C_BPartner bp
 LEFT JOIN AD_Org orgt ON (orgt.IsOrgTrxDim='Y' OR orgt.AD_Org_ID = 0)
 LEFT JOIN SAS_BPRule br ON (br.C_BPartner_ID = bp.C_BPartner_ID AND br.AD_OrgTrx_ID = orgt.AD_Org_ID)
@@ -384,6 +431,9 @@ ORDER BY orgt.Name]]>
 		<field name="total_payment_allocated" class="java.math.BigDecimal"/>
 		<field name="total_giro" class="java.math.BigDecimal"/>
 		<field name="total_giro_allocated" class="java.math.BigDecimal"/>
+		<field name="avg_pay_not_top" class="java.lang.Double"/>
+		<field name="avg_pay_90_not_top" class="java.lang.Double"/>
+		<field name="avg_pay_180_not_top" class="java.lang.Double"/>
 	</subDataset>
 	<subDataset name="GiroBelumCair" uuid="0000600a-7d1e-43e7-8e8e-952f5d64e22a">
 		<parameter name="C_BPartner_ID" class="java.math.BigDecimal">
@@ -475,27 +525,27 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 	<detail>
 		<band height="55">
 			<staticText>
-				<reportElement uuid="2a571ee1-85de-40ba-a375-f30e777542ba" x="0" y="15" width="50" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Center"/>
+				<reportElement uuid="2a571ee1-85de-40ba-a375-f30e777542ba" x="0" y="0" width="50" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Org Trx]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="06703135-69c1-44d9-b365-ac6e88caaaaf" x="50" y="15" width="50" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Center"/>
+				<reportElement uuid="06703135-69c1-44d9-b365-ac6e88caaaaf" x="50" y="0" width="33" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[TOP]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="8725f8a9-6bfc-4236-b8e8-ea9a7b2b1ae9" x="100" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Center"/>
+				<reportElement uuid="8725f8a9-6bfc-4236-b8e8-ea9a7b2b1ae9" x="83" y="0" width="80" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Sales Rep]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="200" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="163" y="0" width="105" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Credit Limit]]></text>
 			</staticText>
 			<componentElement>
-				<reportElement uuid="a408838d-6498-4161-b964-a11d95081be3" x="0" y="35" width="1130" height="20"/>
+				<reportElement uuid="a408838d-6498-4161-b964-a11d95081be3" x="0" y="35" width="1229" height="20"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="BPCredit" uuid="5afe5bfa-d2c0-4d91-ac5b-a929f62ced91">
 						<datasetParameter name="C_BPartner_ID">
@@ -503,124 +553,176 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="20" width="1130">
+					<jr:listContents height="20" width="1229">
 						<textField isBlankWhenNull="true">
 							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="0" y="0" width="50" height="20"/>
-							<textElement/>
+							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$F{orgtrx}]]></textFieldExpression>
 						</textField>
 						<textField isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="50" y="0" width="50" height="20"/>
-							<textElement/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="50" y="0" width="33" height="20"/>
+							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$F{paymentterm}]]></textFieldExpression>
 						</textField>
 						<textField isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="100" y="0" width="100" height="20"/>
-							<textElement/>
-							<textFieldExpression><![CDATA[$F{salesrep}]]></textFieldExpression>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="83" y="0" width="80" height="20"/>
+							<textElement textAlignment="Left"/>
+							<textFieldExpression><![CDATA[$F{salesrep}.replaceAll("[0-9-]", "")]]></textFieldExpression>
 						</textField>
-						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="200" y="0" width="100" height="20"/>
+						<textField pattern="#,##0" isBlankWhenNull="true">
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="163" y="0" width="105" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{so_creditlimit}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="300" y="0" width="130" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="268" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{so_belum_invoice}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="430" y="0" width="110" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="368" y="0" width="105" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{invoice_total} - $F{alokasi_total} + $F{alokasi_giro_belum_cair}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="540" y="0" width="100" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="473" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{alokasi_giro_belum_cair}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="640" y="0" width="63" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="573" y="0" width="60" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{avg_pay}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="703" y="0" width="63" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="633" y="0" width="60" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{avg_pay_90}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="766" y="0" width="63" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="693" y="0" width="60" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{avg_pay_180}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="830" y="0" width="100" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="933" y="0" width="96" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{credit_note}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="930" y="0" width="100" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="1029" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{total_payment} - $F{total_payment_allocated}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="1030" y="0" width="100" height="20"/>
+							<reportElement uuid="13b09e4c-71ca-448a-af5a-78b3109f08cc" x="1129" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{total_giro} - $F{total_giro_allocated}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00" isBlankWhenNull="true">
+							<reportElement uuid="6b47603b-c703-4af8-b7ab-97eea24b1d0b" x="753" y="0" width="60" height="20"/>
+							<textElement textAlignment="Right"/>
+							<textFieldExpression><![CDATA[$F{avg_pay_not_top}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00" isBlankWhenNull="true">
+							<reportElement uuid="89cdcaa9-2e11-4739-ac4d-d47efb6abf8b" x="813" y="0" width="60" height="20"/>
+							<textElement textAlignment="Right"/>
+							<textFieldExpression><![CDATA[$F{avg_pay_90_not_top}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.00" isBlankWhenNull="true">
+							<reportElement uuid="c540150a-573a-4e74-a019-564718a760b3" x="873" y="0" width="60" height="20"/>
+							<textElement textAlignment="Right"/>
+							<textFieldExpression><![CDATA[$F{avg_pay_180_not_top}]]></textFieldExpression>
 						</textField>
 					</jr:listContents>
 				</jr:list>
 			</componentElement>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="300" y="15" width="130" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="268" y="0" width="100" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[SO Belum Invoice]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="430" y="15" width="110" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="368" y="0" width="105" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Faktur Belum Dibayar]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="540" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="473" y="1" width="100" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Giro Belum Cair]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="640" y="15" width="63" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="573" y="15" width="60" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Awal]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="703" y="15" width="63" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="633" y="15" width="60" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[3Bln]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="766" y="15" width="63" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="693" y="15" width="60" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[6Bln]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="830" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="933" y="0" width="96" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Credit Note]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="930" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="1029" y="0" width="100" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Deposit]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="1000" y="15" width="130" height="20" isRemoveLineWhenBlank="true"/>
-				<textElement textAlignment="Right"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="1129" y="0" width="100" height="35" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<text><![CDATA[Giro Belum Dialokasi]]></text>
 			</staticText>
+			<staticText>
+				<reportElement uuid="849e5b38-74cf-476b-b067-9322a1c7602b" x="753" y="15" width="60" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Awal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a271828a-c123-4558-9bb4-bb5845c553fd" x="813" y="15" width="60" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[3Bln]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bd467891-9703-45d6-be03-81968327f064" x="873" y="15" width="60" height="20" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[6Bln]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8b08e421-367e-40a7-a233-acb24c649c7c" x="753" y="0" width="180" height="15" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Top"/>
+				<text><![CDATA[Tidak Sesuai BP Rule]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="c820e66d-5576-419c-bcaf-7f065d7d260c" x="-21" y="35" width="1250" height="1" isRemoveLineWhenBlank="true"/>
+			</line>
+			<line>
+				<reportElement uuid="8818f747-ca42-45f3-a647-2bac772805d4" x="-20" y="0" width="1249" height="1" isRemoveLineWhenBlank="true"/>
+			</line>
+			<staticText>
+				<reportElement uuid="8d9667e2-8f52-4cd5-a12f-34a53639d415" x="573" y="0" width="180" height="15" isRemoveLineWhenBlank="true" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top"/>
+				<text><![CDATA[Sesuai BP Rule]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="f27a8436-722f-447b-8a9f-e8380ef61dbc" x="583" y="15" width="170" height="1" isRemoveLineWhenBlank="true"/>
+			</line>
+			<line>
+				<reportElement uuid="d102017e-243f-4964-884a-ca4849b26ea5" x="762" y="15" width="171" height="1" isRemoveLineWhenBlank="true"/>
+			</line>
 		</band>
 		<band height="54">
 			<componentElement>
-				<reportElement uuid="64a3e45c-c66b-45ed-a0d8-93a311e143c1" x="0" y="34" width="1130" height="20"/>
+				<reportElement uuid="64a3e45c-c66b-45ed-a0d8-93a311e143c1" x="0" y="34" width="1229" height="20"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="SO" uuid="4f1cd72c-ac08-42e7-b63c-bf3dea7f31e8">
 						<datasetParameter name="C_BPartner_ID">
@@ -628,7 +730,7 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="20" width="1130">
+					<jr:listContents height="20" width="1229">
 						<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
 							<reportElement uuid="6654a34b-f14f-4321-8373-ed2d3e5c9782" x="0" y="0" width="120" height="20"/>
 							<textElement/>
@@ -640,27 +742,27 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 							<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-							<reportElement uuid="9b87610d-6bf0-4732-a26c-66d2fa834a0d" x="240" y="0" width="489" height="20"/>
+							<reportElement uuid="9b87610d-6bf0-4732-a26c-66d2fa834a0d" x="240" y="0" width="589" height="20"/>
 							<textElement/>
 							<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0" isBlankWhenNull="true">
-							<reportElement uuid="1ec44c8d-f0df-4cbd-866b-5eeb225c159e" x="730" y="0" width="100" height="20"/>
+							<reportElement uuid="1ec44c8d-f0df-4cbd-866b-5eeb225c159e" x="829" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{grandtotal}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0" isBlankWhenNull="true">
-							<reportElement uuid="d365541e-2491-4359-b70b-0ec4e2a26a1c" x="830" y="0" width="100" height="20"/>
+							<reportElement uuid="d365541e-2491-4359-b70b-0ec4e2a26a1c" x="929" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{invoiced}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0" isBlankWhenNull="true">
-							<reportElement uuid="53299994-fc0d-45e1-b0c4-c198c4471670" x="930" y="0" width="100" height="20"/>
+							<reportElement uuid="53299994-fc0d-45e1-b0c4-c198c4471670" x="1029" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{sisa}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0" isBlankWhenNull="true">
-							<reportElement uuid="9fcb0b98-d105-4ffc-85f4-ee9e103a8024" x="1030" y="0" width="100" height="20"/>
+							<reportElement uuid="9fcb0b98-d105-4ffc-85f4-ee9e103a8024" x="1129" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{accumulated}]]></textFieldExpression>
 						</textField>
@@ -668,55 +770,55 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 				</jr:list>
 			</componentElement>
 			<staticText>
-				<reportElement uuid="ff08d683-a2fc-428c-a5d8-de4245bf3923" x="0" y="0" width="1129" height="15" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="ff08d683-a2fc-428c-a5d8-de4245bf3923" x="0" y="0" width="1229" height="15" isRemoveLineWhenBlank="true"/>
 				<textElement/>
 				<text><![CDATA[SO Belum Invoice]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="2a571ee1-85de-40ba-a375-f30e777542ba" x="0" y="15" width="120" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="2a571ee1-85de-40ba-a375-f30e777542ba" x="0" y="14" width="120" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[DateOrder]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="06703135-69c1-44d9-b365-ac6e88caaaaf" x="120" y="15" width="120" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="06703135-69c1-44d9-b365-ac6e88caaaaf" x="120" y="14" width="120" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Sales Order]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="8725f8a9-6bfc-4236-b8e8-ea9a7b2b1ae9" x="240" y="15" width="489" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="8725f8a9-6bfc-4236-b8e8-ea9a7b2b1ae9" x="240" y="14" width="589" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="730" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="fb01c77d-27d6-49ff-ab98-ed377053f857" x="829" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Grand Total]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="db976bf0-34eb-4446-87af-2986d60b460b" x="830" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="db976bf0-34eb-4446-87af-2986d60b460b" x="929" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Invoiced]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="310ce80c-42af-4f7e-843b-c1263138ff51" x="930" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="310ce80c-42af-4f7e-843b-c1263138ff51" x="1029" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Sisa]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="5646ebbd-43ae-48b8-be79-9eb51ad7e76e" x="1030" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="5646ebbd-43ae-48b8-be79-9eb51ad7e76e" x="1129" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Accumulated]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="66f647d0-d20e-4583-93b8-f8e65f6a621d" x="0" y="15" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="66f647d0-d20e-4583-93b8-f8e65f6a621d" x="0" y="15" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 			<line>
-				<reportElement uuid="b56d6a92-5107-428f-a7be-eb188b4f32b2" x="0" y="34" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="b56d6a92-5107-428f-a7be-eb188b4f32b2" x="0" y="34" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 		</band>
 		<band height="54">
 			<componentElement>
-				<reportElement uuid="e22b49e5-2463-4e75-835d-e195ed79860a" x="0" y="34" width="1130" height="20"/>
+				<reportElement uuid="e22b49e5-2463-4e75-835d-e195ed79860a" x="0" y="34" width="1229" height="20"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="Invoice" uuid="59e5c0c3-9bbb-48de-8252-acc82219d9c2">
 						<datasetParameter name="C_BPartner_ID">
@@ -724,49 +826,49 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="20" width="1130">
+					<jr:listContents height="20" width="1229">
 						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 							<reportElement uuid="4406b08c-9b01-40f2-9892-4403d765a106" x="0" y="0" width="156" height="20"/>
 							<textElement/>
 							<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-							<reportElement uuid="6c3f9b1c-f63c-450f-9d11-528264055609" x="156" y="0" width="413" height="20"/>
+							<reportElement uuid="6c3f9b1c-f63c-450f-9d11-528264055609" x="156" y="0" width="513" height="20"/>
 							<textElement/>
 							<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 						</textField>
 						<textField pattern="YYYY-MM-dd" isBlankWhenNull="true">
-							<reportElement uuid="7aa6d1b2-4fc4-47a6-ab95-99a3dc5b1ad6" x="569" y="0" width="75" height="20"/>
+							<reportElement uuid="7aa6d1b2-4fc4-47a6-ab95-99a3dc5b1ad6" x="669" y="0" width="75" height="20"/>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$F{duedate}]]></textFieldExpression>
 						</textField>
 						<textField isBlankWhenNull="true">
-							<reportElement uuid="682c975c-2af9-4e16-a1ac-256c3fa2ad84" x="684" y="0" width="45" height="20"/>
+							<reportElement uuid="682c975c-2af9-4e16-a1ac-256c3fa2ad84" x="784" y="0" width="45" height="20"/>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$F{netdays}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="4b434955-8fe0-447d-98e0-9314caf96af6" x="729" y="0" width="100" height="20"/>
+							<reportElement uuid="4b434955-8fe0-447d-98e0-9314caf96af6" x="829" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{grandtotal}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="f66f6562-8cf6-4cb4-b9f3-270c6c128b21" x="829" y="0" width="100" height="20"/>
+							<reportElement uuid="f66f6562-8cf6-4cb4-b9f3-270c6c128b21" x="929" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{paid}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="dba15f53-e6af-4954-bcfb-3b8ebdcf4812" x="929" y="0" width="100" height="20"/>
+							<reportElement uuid="dba15f53-e6af-4954-bcfb-3b8ebdcf4812" x="1029" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{sisa}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="54bda1f3-a760-4c95-806a-217a2f486cd4" x="1029" y="0" width="100" height="20"/>
+							<reportElement uuid="54bda1f3-a760-4c95-806a-217a2f486cd4" x="1129" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{accumulated}]]></textFieldExpression>
 						</textField>
 						<textField isBlankWhenNull="true">
-							<reportElement uuid="d880bb2d-5fa2-43f6-8871-1e809add05f5" x="644" y="0" width="40" height="20"/>
+							<reportElement uuid="d880bb2d-5fa2-43f6-8871-1e809add05f5" x="744" y="0" width="40" height="20"/>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$F{top}]]></textFieldExpression>
 						</textField>
@@ -774,65 +876,65 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 				</jr:list>
 			</componentElement>
 			<staticText>
-				<reportElement uuid="06b51dc8-6fbf-48b4-9491-fdeb857e0a37" x="0" y="0" width="1129" height="15" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="06b51dc8-6fbf-48b4-9491-fdeb857e0a37" x="0" y="0" width="1229" height="15" isRemoveLineWhenBlank="true"/>
 				<textElement/>
 				<text><![CDATA[Faktur Belum Dibayar + Faktur Yang Gironya Belum Cair]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d747ea7b-e1a1-4277-9a92-b97f30ec3727" x="0" y="16" width="156" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="d747ea7b-e1a1-4277-9a92-b97f30ec3727" x="0" y="14" width="156" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Invoice]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="8123c107-9422-4b1c-a1a1-7bbaec7a6b41" x="156" y="15" width="413" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="8123c107-9422-4b1c-a1a1-7bbaec7a6b41" x="156" y="15" width="513" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="183ddfed-779e-40d6-9a9c-333e2f5d5f7a" x="729" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="183ddfed-779e-40d6-9a9c-333e2f5d5f7a" x="829" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Grand Total]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="6a2da503-b470-453d-92bc-62c3f43f2eaa" x="829" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="6a2da503-b470-453d-92bc-62c3f43f2eaa" x="929" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Paid]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="1c7c0a3a-7925-4127-adcd-c6413be2aa1b" x="929" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="1c7c0a3a-7925-4127-adcd-c6413be2aa1b" x="1029" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Sisa]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="fd916a45-a524-41dd-838d-b3c7b4cfa950" x="1029" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="fd916a45-a524-41dd-838d-b3c7b4cfa950" x="1129" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Accumulated]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="8dbe40b7-b82c-4079-a55b-d343d78744ce" x="0" y="15" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="8dbe40b7-b82c-4079-a55b-d343d78744ce" x="0" y="15" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 			<line>
-				<reportElement uuid="abfd56dd-1708-4ba7-9013-6861bf183e05" x="0" y="34" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="abfd56dd-1708-4ba7-9013-6861bf183e05" x="0" y="34" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 			<staticText>
-				<reportElement uuid="abf83cba-9b85-44b3-acb8-3ce489df2921" x="569" y="16" width="75" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="abf83cba-9b85-44b3-acb8-3ce489df2921" x="669" y="16" width="75" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Due Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b4aa966f-0bf6-4e16-bf48-e9c4fd815ccb" x="684" y="15" width="45" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="b4aa966f-0bf6-4e16-bf48-e9c4fd815ccb" x="784" y="14" width="45" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Net Days]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="15e2d243-ad88-498c-b199-074244a5aab7" x="644" y="16" width="40" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="15e2d243-ad88-498c-b199-074244a5aab7" x="744" y="15" width="40" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[TOP]]></text>
 			</staticText>
 		</band>
 		<band height="54">
 			<componentElement>
-				<reportElement uuid="f2d047a5-399b-48fd-ad05-8ae4846b69bd" x="0" y="34" width="1130" height="20"/>
+				<reportElement uuid="f2d047a5-399b-48fd-ad05-8ae4846b69bd" x="0" y="34" width="1229" height="20"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="InvoiceCreditMemo" uuid="145aa1a8-69d3-4bc0-b5de-2cee52543298">
 						<datasetParameter name="C_BPartner_ID">
@@ -840,49 +942,49 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="20" width="1130">
+					<jr:listContents height="20" width="1229">
 						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 							<reportElement uuid="4406b08c-9b01-40f2-9892-4403d765a106" x="0" y="0" width="156" height="20"/>
 							<textElement/>
 							<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-							<reportElement uuid="6c3f9b1c-f63c-450f-9d11-528264055609" x="156" y="0" width="413" height="20"/>
+							<reportElement uuid="6c3f9b1c-f63c-450f-9d11-528264055609" x="156" y="0" width="513" height="20"/>
 							<textElement/>
 							<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 						</textField>
 						<textField pattern="YYYY-MM-dd" isBlankWhenNull="true">
-							<reportElement uuid="7aa6d1b2-4fc4-47a6-ab95-99a3dc5b1ad6" x="569" y="0" width="75" height="20"/>
+							<reportElement uuid="7aa6d1b2-4fc4-47a6-ab95-99a3dc5b1ad6" x="669" y="0" width="75" height="20"/>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$F{duedate}]]></textFieldExpression>
 						</textField>
 						<textField isBlankWhenNull="true">
-							<reportElement uuid="682c975c-2af9-4e16-a1ac-256c3fa2ad84" x="684" y="0" width="45" height="20"/>
+							<reportElement uuid="682c975c-2af9-4e16-a1ac-256c3fa2ad84" x="784" y="0" width="45" height="20"/>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$F{netdays}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="4b434955-8fe0-447d-98e0-9314caf96af6" x="729" y="0" width="100" height="20"/>
+							<reportElement uuid="4b434955-8fe0-447d-98e0-9314caf96af6" x="829" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{grandtotal}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="f66f6562-8cf6-4cb4-b9f3-270c6c128b21" x="829" y="0" width="100" height="20"/>
+							<reportElement uuid="f66f6562-8cf6-4cb4-b9f3-270c6c128b21" x="929" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{paid}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="dba15f53-e6af-4954-bcfb-3b8ebdcf4812" x="929" y="0" width="100" height="20"/>
+							<reportElement uuid="dba15f53-e6af-4954-bcfb-3b8ebdcf4812" x="1029" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{sisa}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="54bda1f3-a760-4c95-806a-217a2f486cd4" x="1029" y="0" width="100" height="20"/>
+							<reportElement uuid="54bda1f3-a760-4c95-806a-217a2f486cd4" x="1129" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{accumulated}]]></textFieldExpression>
 						</textField>
 						<textField isBlankWhenNull="true">
-							<reportElement uuid="4e53b3ef-9cc4-45e9-838b-14431c58bb13" x="644" y="0" width="40" height="20"/>
+							<reportElement uuid="4e53b3ef-9cc4-45e9-838b-14431c58bb13" x="744" y="0" width="40" height="20"/>
 							<textElement textAlignment="Center"/>
 							<textFieldExpression><![CDATA[$F{top}]]></textFieldExpression>
 						</textField>
@@ -890,65 +992,65 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 				</jr:list>
 			</componentElement>
 			<staticText>
-				<reportElement uuid="d24602b5-1c00-47f5-b3b5-beb419179213" x="0" y="0" width="1130" height="15" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="d24602b5-1c00-47f5-b3b5-beb419179213" x="0" y="0" width="1229" height="15" isRemoveLineWhenBlank="true"/>
 				<textElement/>
 				<text><![CDATA[Credit Note]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="f9651d30-827c-4d64-abdb-383652e74dbf" x="0" y="16" width="156" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="f9651d30-827c-4d64-abdb-383652e74dbf" x="0" y="14" width="156" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Invoice]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="d622ef12-5e63-4556-9be3-a96593474665" x="156" y="15" width="413" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="d622ef12-5e63-4556-9be3-a96593474665" x="156" y="15" width="513" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="48349f64-6732-4e86-820c-36e8acfb6050" x="729" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="48349f64-6732-4e86-820c-36e8acfb6050" x="829" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Grand Total]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="b8445e9d-2246-46bd-a658-bb5c15eb1154" x="829" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="b8445e9d-2246-46bd-a658-bb5c15eb1154" x="929" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Paid]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="613ce949-9966-4985-9bf1-a70c2eccee5c" x="929" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="613ce949-9966-4985-9bf1-a70c2eccee5c" x="1029" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Sisa]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="23aac4f6-301f-4b15-9a33-c437213b02b2" x="1029" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="23aac4f6-301f-4b15-9a33-c437213b02b2" x="1129" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Accumulated]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="bd521b69-d82d-4a03-89cf-0fe2cf9ea824" x="0" y="15" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="bd521b69-d82d-4a03-89cf-0fe2cf9ea824" x="0" y="15" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 			<line>
-				<reportElement uuid="5ea36bb5-3ac2-4e61-adc8-030cd0532889" x="0" y="34" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="5ea36bb5-3ac2-4e61-adc8-030cd0532889" x="0" y="34" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 			<staticText>
-				<reportElement uuid="1b26e214-c46c-487e-bf48-ef17c0b0d520" x="569" y="16" width="75" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="1b26e214-c46c-487e-bf48-ef17c0b0d520" x="669" y="15" width="75" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Due Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="78fd81a8-14ec-454a-afc0-ec27c246aa95" x="684" y="15" width="45" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="78fd81a8-14ec-454a-afc0-ec27c246aa95" x="784" y="14" width="45" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Net Days]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="652a988e-02d6-4dd3-bf09-47a7c3401289" x="644" y="16" width="40" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="652a988e-02d6-4dd3-bf09-47a7c3401289" x="744" y="15" width="40" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[TOP]]></text>
 			</staticText>
 		</band>
 		<band height="54">
 			<componentElement>
-				<reportElement uuid="50e85e40-245c-4a02-af65-65e3065f203f" x="0" y="34" width="1130" height="20"/>
+				<reportElement uuid="50e85e40-245c-4a02-af65-65e3065f203f" x="0" y="34" width="1229" height="20"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="Payment" uuid="a8df84df-4c67-4995-9d77-e41dcc10a46b">
 						<datasetParameter name="C_BPartner_ID">
@@ -956,7 +1058,7 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="20" width="1130">
+					<jr:listContents height="20" width="1229">
 						<textField pattern="YYYY-MM-dd" isBlankWhenNull="true">
 							<reportElement uuid="6654a34b-f14f-4321-8373-ed2d3e5c9782" x="0" y="0" width="120" height="20"/>
 							<textElement/>
@@ -968,27 +1070,27 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 							<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-							<reportElement uuid="9b87610d-6bf0-4732-a26c-66d2fa834a0d" x="240" y="0" width="489" height="20"/>
+							<reportElement uuid="9b87610d-6bf0-4732-a26c-66d2fa834a0d" x="240" y="0" width="589" height="20"/>
 							<textElement/>
 							<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="1ec44c8d-f0df-4cbd-866b-5eeb225c159e" x="729" y="0" width="100" height="20"/>
+							<reportElement uuid="1ec44c8d-f0df-4cbd-866b-5eeb225c159e" x="829" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{payamt}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="d365541e-2491-4359-b70b-0ec4e2a26a1c" x="829" y="0" width="100" height="20"/>
+							<reportElement uuid="d365541e-2491-4359-b70b-0ec4e2a26a1c" x="929" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{allocatedamt}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="53299994-fc0d-45e1-b0c4-c198c4471670" x="929" y="0" width="100" height="20"/>
+							<reportElement uuid="53299994-fc0d-45e1-b0c4-c198c4471670" x="1029" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{sisa}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="9fcb0b98-d105-4ffc-85f4-ee9e103a8024" x="1029" y="0" width="100" height="20"/>
+							<reportElement uuid="9fcb0b98-d105-4ffc-85f4-ee9e103a8024" x="1129" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{accumulated}]]></textFieldExpression>
 						</textField>
@@ -996,7 +1098,7 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 				</jr:list>
 			</componentElement>
 			<staticText>
-				<reportElement uuid="6401e393-4348-47ae-b038-69eaab93157c" x="0" y="0" width="1129" height="15" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="6401e393-4348-47ae-b038-69eaab93157c" x="0" y="0" width="1229" height="15" isRemoveLineWhenBlank="true"/>
 				<textElement/>
 				<text><![CDATA[Deposit]]></text>
 			</staticText>
@@ -1011,40 +1113,40 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 				<text><![CDATA[Payment]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7fdeb493-a059-4055-890a-5a53216d3829" x="240" y="15" width="489" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="7fdeb493-a059-4055-890a-5a53216d3829" x="240" y="15" width="589" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="caa3bce3-ec51-4699-ab9f-87ba23885aaa" x="729" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="caa3bce3-ec51-4699-ab9f-87ba23885aaa" x="829" y="16" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Payment Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="0db4aa4c-907b-46a7-9876-257a0f97021b" x="829" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="0db4aa4c-907b-46a7-9876-257a0f97021b" x="929" y="16" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Allocated Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="83223301-2968-41da-af69-89ba94f9b1bc" x="929" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="83223301-2968-41da-af69-89ba94f9b1bc" x="1029" y="16" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Sisa Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="8e460f55-6a81-4635-8c39-b914a4222f32" x="1029" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="8e460f55-6a81-4635-8c39-b914a4222f32" x="1129" y="16" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Accumulated]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="12155bb3-8d3b-4089-a6d5-2a204233ed19" x="0" y="15" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="12155bb3-8d3b-4089-a6d5-2a204233ed19" x="0" y="15" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 			<line>
-				<reportElement uuid="77b64b64-9198-4377-b010-0464b0dd08b7" x="0" y="34" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="77b64b64-9198-4377-b010-0464b0dd08b7" x="0" y="34" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 		</band>
 		<band height="55">
 			<componentElement>
-				<reportElement uuid="50e85e40-245c-4a02-af65-65e3065f203f" x="0" y="34" width="1130" height="20"/>
+				<reportElement uuid="50e85e40-245c-4a02-af65-65e3065f203f" x="0" y="34" width="1229" height="20"/>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
 					<datasetRun subDataset="GiroBelumCair" uuid="a8df84df-4c67-4995-9d77-e41dcc10a46b">
 						<datasetParameter name="C_BPartner_ID">
@@ -1052,7 +1154,7 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="20" width="1130">
+					<jr:listContents height="20" width="1229">
 						<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
 							<reportElement uuid="6654a34b-f14f-4321-8373-ed2d3e5c9782" x="0" y="0" width="120" height="20"/>
 							<textElement/>
@@ -1064,17 +1166,17 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 							<textFieldExpression><![CDATA[$F{checkno}]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-							<reportElement uuid="9b87610d-6bf0-4732-a26c-66d2fa834a0d" x="360" y="0" width="569" height="20"/>
+							<reportElement uuid="9b87610d-6bf0-4732-a26c-66d2fa834a0d" x="360" y="0" width="669" height="20"/>
 							<textElement/>
 							<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="1ec44c8d-f0df-4cbd-866b-5eeb225c159e" x="929" y="0" width="100" height="20"/>
+							<reportElement uuid="1ec44c8d-f0df-4cbd-866b-5eeb225c159e" x="1029" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$F{payamt}]]></textFieldExpression>
 						</textField>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="9fcb0b98-d105-4ffc-85f4-ee9e103a8024" x="1029" y="0" width="100" height="20"/>
+							<reportElement uuid="9fcb0b98-d105-4ffc-85f4-ee9e103a8024" x="1129" y="0" width="100" height="20"/>
 							<textElement textAlignment="Right"/>
 							<textFieldExpression><![CDATA[$V{accumulated}]]></textFieldExpression>
 						</textField>
@@ -1087,12 +1189,12 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 				</jr:list>
 			</componentElement>
 			<staticText>
-				<reportElement uuid="6401e393-4348-47ae-b038-69eaab93157c" x="0" y="0" width="1129" height="15" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="6401e393-4348-47ae-b038-69eaab93157c" x="0" y="0" width="1229" height="15" isRemoveLineWhenBlank="true"/>
 				<textElement/>
 				<text><![CDATA[Giro Belum Cair]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="af4731ba-96fd-466d-8537-386395f6999b" x="0" y="15" width="120" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="af4731ba-96fd-466d-8537-386395f6999b" x="-553" y="15" width="120" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Giro Date]]></text>
 			</staticText>
@@ -1102,25 +1204,25 @@ WHERE bp.C_BPartner_ID=COALESCE($P{RECORD_ID},$P{C_BPartner_ID})]]>
 				<text><![CDATA[Giro No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="7fdeb493-a059-4055-890a-5a53216d3829" x="360" y="15" width="569" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="7fdeb493-a059-4055-890a-5a53216d3829" x="360" y="15" width="669" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center"/>
 				<text><![CDATA[Description]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="caa3bce3-ec51-4699-ab9f-87ba23885aaa" x="929" y="16" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="caa3bce3-ec51-4699-ab9f-87ba23885aaa" x="1029" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Payment Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="8e460f55-6a81-4635-8c39-b914a4222f32" x="1029" y="15" width="100" height="20" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="8e460f55-6a81-4635-8c39-b914a4222f32" x="1129" y="14" width="100" height="20" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Accumulated]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="12155bb3-8d3b-4089-a6d5-2a204233ed19" x="0" y="15" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="12155bb3-8d3b-4089-a6d5-2a204233ed19" x="0" y="15" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 			<line>
-				<reportElement uuid="77b64b64-9198-4377-b010-0464b0dd08b7" x="0" y="34" width="1130" height="1" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="77b64b64-9198-4377-b010-0464b0dd08b7" x="0" y="34" width="1229" height="1" isRemoveLineWhenBlank="true"/>
 			</line>
 			<staticText>
 				<reportElement uuid="a4a471b6-cc90-4d5b-8190-9fe3e89c24c4" x="240" y="16" width="120" height="20" isRemoveLineWhenBlank="true"/>

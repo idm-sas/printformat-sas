@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SalesOrderForm" language="groovy" pageWidth="710" pageHeight="792" columnWidth="654" leftMargin="28" rightMargin="28" topMargin="36" bottomMargin="36" uuid="c979cd7c-a35f-4c63-8a1c-b4a96faab84e">
-	<property name="ireport.zoom" value="1.500000000000006"/>
+	<property name="ireport.zoom" value="1.1269722013523664"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="677"/>
-	<subDataset name="CreditBPOrgTrx" uuid="af3dc438-5502-435a-85e0-e1e83cf39a89">
+	<property name="ireport.y" value="0"/>
+	<subDataset name="CreditBP" uuid="af3dc438-5502-435a-85e0-e1e83cf39a89">
 		<parameter name="C_Order_ID" class="java.lang.Integer">
 			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 		</parameter>
@@ -17,7 +17,7 @@
 		FROM C_Order ox
 		INNER JOIN C_DocType dt ON (dt.C_DocType_ID = ox.C_DocType_ID)
 		WHERE ox.IsSOTrx = 'Y' AND ox.DocStatus IN ('CO','IP')
-		AND dt.DocBaseType = 'SOO' AND dt.DocSubTypeSO IN ('SO','OB')
+		AND dt.DocBaseType = 'SOO' AND dt.DocSubTypeSO = 'SO'
 		AND ox.C_Order_ID <> o.C_Order_ID AND ox.Bill_BPartner_ID = o.Bill_BPartner_ID
 		AND ox.AD_OrgTrx_ID = o.AD_OrgTrx_ID)
 	 + o.GrandTotal
@@ -37,21 +37,17 @@
 	 INNER JOIN C_AllocationHdr ah ON (ah.C_AllocationHdr_ID = al.C_AllocationHdr_ID)
 	 INNER JOIN C_Invoice i ON (i.C_Invoice_ID = al.C_Invoice_ID)
 	 LEFT JOIN C_Payment py ON (py.C_Payment_ID = al.C_Payment_ID)
-	 INNER JOIN C_DocType dt ON (dt.C_DocType_ID = i.C_DocType_ID)
 	 WHERE i.IsSOTrx='Y' AND ah.DocStatus IN ('CO','CL')
-	 AND al.C_BPartner_ID = o.Bill_BPartner_ID AND i.AD_OrgTrx_ID = o.AD_OrgTrx_ID
-	 AND dt.DocBaseType NOT IN ('APC','ARC'))
+	 AND al.C_BPartner_ID = o.Bill_BPartner_ID AND i.AD_OrgTrx_ID = o.AD_OrgTrx_ID)
 	 + (SELECT COALESCE(SUM(al.Amount),0)
 	 FROM C_AllocationLine al
 	 INNER JOIN C_AllocationHdr ah ON (ah.C_AllocationHdr_ID = al.C_AllocationHdr_ID)
 	 INNER JOIN C_Invoice i ON (i.C_Invoice_ID = al.C_Invoice_ID)
 	 LEFT JOIN C_Payment py ON (py.C_Payment_ID = al.C_Payment_ID)
-	 INNER JOIN C_DocType dt ON (dt.C_DocType_ID = i.C_DocType_ID)
 	 WHERE i.IsSOTrx='Y' AND ah.DocStatus IN ('CO','CL')
 	 AND al.C_BPartner_ID = o.Bill_BPartner_ID AND i.AD_OrgTrx_ID = o.AD_OrgTrx_ID
 	 AND ADDDAYS(ah.DateTrx,2) > CURRENT_DATE
-	 AND py.TenderType = 'K'
-	 AND dt.DocBaseType NOT IN ('APC','ARC'))) AS SO_CreditUsed
+	 AND py.TenderType = 'K')) AS SO_CreditUsed
 FROM C_Order o
 WHERE o.C_Order_ID=$P{C_Order_ID}]]>
 		</queryString>
@@ -69,7 +65,6 @@ FROM C_Order o
 INNER JOIN C_Invoice i ON (i.C_BPartner_ID=o.C_BPartner_ID AND i.DocStatus IN ('CO','CL') AND i.IsPaid='N')
 INNER JOIN C_PaymentTerm pt ON (pt.C_PaymentTerm_ID=i.C_PaymentTerm_ID)
 WHERE o.C_Order_ID=$P{C_Order_ID}
-AND i.C_DocType_ID NOT IN (550289,1000004,550294,550293)
 ORDER BY i.DateInvoiced LIMIT 1]]>
 		</queryString>
 		<field name="agingover" class="java.lang.Integer"/>
@@ -105,54 +100,6 @@ WHERE o.C_Order_ID=$P{C_Order_ID}]]>
 :
 0]]></variableExpression>
 		</variable>
-	</subDataset>
-	<subDataset name="CreditBPHolding" uuid="e6c937d5-01bc-4cef-a783-533b3f25dd54">
-		<parameter name="C_Order_ID" class="java.lang.Integer">
-			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-		</parameter>
-		<queryString>
-			<![CDATA[SELECT
-	(SELECT SUM(CASE WHEN bpr.SO_CreditLimit < 0 THEN 0 ELSE bpr.SO_CreditLimit END)
-	 FROM SAS_BPRule bpr
-	 WHERE bpr.C_BPartner_ID=o.Bill_BPartner_ID) AS total_CreditLimit,
-	(	(SELECT COALESCE(SUM(ox.GrandTotal),0)
-		FROM C_Order ox
-		INNER JOIN C_DocType dt ON (dt.C_DocType_ID = ox.C_DocType_ID)
-		WHERE ox.IsSOTrx = 'Y' AND ox.DocStatus IN ('CO','IP')
-		AND dt.DocBaseType = 'SOO' AND dt.DocSubTypeSO IN ('SO','OB')
-		AND ox.C_Order_ID <> o.C_Order_ID AND ox.Bill_BPartner_ID = o.Bill_BPartner_ID)
-	 + o.GrandTotal
-	 + (SELECT COALESCE(SUM((ol.QtyOrdered * ol.PriceActual) +
-		CASE WHEN pl.IsTaxIncluded = 'N' THEN (ol.QtyOrdered * ol.PriceActual * t.Rate / 100) ELSE 0 END),0)
-		FROM C_Order ox
-		INNER JOIN C_OrderLine ol ON (ol.C_Order_ID = ox.C_Order_ID)
-		INNER JOIN C_Tax t ON (t.C_Tax_ID = ol.C_Tax_ID)
-		INNER JOIN C_DocType dt ON (dt.C_DocType_ID = ox.C_DocType_ID)
-		INNER JOIN M_PriceList pl ON (pl.M_PriceList_ID = ox.M_PriceList_ID)
-		WHERE ox.IsSOTrx = 'Y' AND ox.DocStatus IN ('CL')
-		AND dt.DocBaseType = 'SOO' AND dt.DocSubTypeSO = 'SO'
-		AND ox.C_Order_ID <> o.C_Order_ID AND ox.Bill_BPartner_ID = o.Bill_BPartner_ID)
-	 - (SELECT COALESCE(SUM(al.Amount),0)
-	 FROM C_AllocationLine al
-	 INNER JOIN C_AllocationHdr ah ON (ah.C_AllocationHdr_ID = al.C_AllocationHdr_ID)
-	 INNER JOIN C_Invoice i ON (i.C_Invoice_ID = al.C_Invoice_ID)
-	 LEFT JOIN C_Payment py ON (py.C_Payment_ID = al.C_Payment_ID)
-	 WHERE i.IsSOTrx='Y' AND ah.DocStatus IN ('CO','CL')
-	 AND al.C_BPartner_ID = o.Bill_BPartner_ID)
-	 + (SELECT COALESCE(SUM(al.Amount),0)
-	 FROM C_AllocationLine al
-	 INNER JOIN C_AllocationHdr ah ON (ah.C_AllocationHdr_ID = al.C_AllocationHdr_ID)
-	 INNER JOIN C_Invoice i ON (i.C_Invoice_ID = al.C_Invoice_ID)
-	 LEFT JOIN C_Payment py ON (py.C_Payment_ID = al.C_Payment_ID)
-	 WHERE i.IsSOTrx='Y' AND ah.DocStatus IN ('CO','CL')
-	 AND al.C_BPartner_ID = o.Bill_BPartner_ID
-	 AND ADDDAYS(ah.DateTrx,2) > CURRENT_DATE
-	 AND py.TenderType = 'K')) AS total_CreditUsed
-FROM C_Order o
-WHERE o.C_Order_ID= $P{C_Order_ID}]]>
-		</queryString>
-		<field name="total_creditlimit" class="java.math.BigDecimal"/>
-		<field name="total_creditused" class="java.math.BigDecimal"/>
 	</subDataset>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<parameter name="C_Order_ID" class="java.lang.Integer"/>
@@ -374,9 +321,7 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 				<reportElement uuid="f724af62-29fd-4395-b100-ffe66458976e" x="0" y="49" width="243" height="15"/>
 				<textElement/>
 				<textFieldExpression><![CDATA[$F{bp_value}+" | "+
-(Character.isDigit($F{bp_name}.charAt(0)) && $F{bp_name}.substring(1,2).equals(".") ?
-        $F{bp_name}.substring(2,$F{bp_name}.length()).trim().replaceAll("\\[.*?\\] ?", "")
-: $F{bp_name}.replaceAll("\\[.*?\\] ?", ""))]]></textFieldExpression>
+(Character.isDigit($F{bp_name}.charAt(0)) && $F{bp_name}.substring(1,2).equals(".") ? $F{bp_name}.substring(2,$F{bp_name}.length()).trim() : $F{bp_name})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement uuid="00e7b6e3-023f-4f88-8fb1-dabaa0e42944" x="508" y="64" width="146" height="15"/>
@@ -915,11 +860,11 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 				<textFieldExpression><![CDATA[$V{DISCOUNT_TOTAL}]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement uuid="bb6e6c9c-8efa-4939-8664-0d26756d8336" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="81" width="654" height="15" isRemoveLineWhenBlank="true">
+				<reportElement uuid="00184122-47e2-416d-8177-73dcb4773a36" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="81" width="654" height="15" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{z_wfscenariocredit_id}>0]]></printWhenExpression>
 				</reportElement>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical" ignoreWidth="true">
-					<datasetRun subDataset="CreditBPHolding" uuid="e6c0628e-e646-4c13-b49b-96a8c052d704">
+					<datasetRun subDataset="CreditBP" uuid="cc108c99-8a74-4ce1-9ef4-1fb01b571b93">
 						<datasetParameter name="C_Order_ID">
 							<datasetParameterExpression><![CDATA[$P{RECORD_ID}]]></datasetParameterExpression>
 						</datasetParameter>
@@ -927,89 +872,17 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 					</datasetRun>
 					<jr:listContents height="15" width="654">
 						<staticText>
-							<reportElement uuid="2a5ea5df-493e-45de-9127-6228764e5bc1" stretchType="RelativeToBandHeight" x="233" y="0" width="62" height="15" isRemoveLineWhenBlank="true"/>
+							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" stretchType="RelativeToBandHeight" x="200" y="0" width="75" height="15" isRemoveLineWhenBlank="true"/>
 							<textElement verticalAlignment="Top"/>
 							<text><![CDATA[Credit Used]]></text>
 						</staticText>
 						<staticText>
-							<reportElement uuid="f7b8a4d6-7371-4c1e-aa3e-420e6e2c762f" stretchType="RelativeToBandHeight" x="415" y="0" width="80" height="15" isRemoveLineWhenBlank="true"/>
-							<textElement verticalAlignment="Top"/>
-							<text><![CDATA[Credit Available]]></text>
-						</staticText>
-						<staticText>
-							<reportElement uuid="d273cc20-fb80-4b6d-9599-a9193515d30b" stretchType="RelativeToBandHeight" x="0" y="0" width="115" height="15" isRemoveLineWhenBlank="true"/>
-							<textElement verticalAlignment="Top"/>
-							<text><![CDATA[Credit Limit Holding]]></text>
-						</staticText>
-						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="bed8399c-a021-48d0-9e3c-9d7296f71405" stretchType="RelativeToBandHeight" x="115" y="0" width="117" height="15"/>
-							<box leftPadding="2" rightPadding="3">
-								<pen lineWidth="1.0"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0" lineStyle="Dotted"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0" lineStyle="Dotted"/>
-							</box>
-							<textElement verticalAlignment="Top">
-								<font size="10"/>
-							</textElement>
-							<textFieldExpression><![CDATA[$F{total_creditlimit}]]></textFieldExpression>
-						</textField>
-						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="e53082d0-90a2-4696-9867-5be5ce57fa85" stretchType="RelativeToBandHeight" x="295" y="0" width="120" height="15"/>
-							<box leftPadding="2" rightPadding="3">
-								<pen lineWidth="1.0"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0" lineStyle="Dotted"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0" lineStyle="Dotted"/>
-							</box>
-							<textElement verticalAlignment="Top">
-								<font size="10"/>
-							</textElement>
-							<textFieldExpression><![CDATA[$F{total_creditused}]]></textFieldExpression>
-						</textField>
-						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="5389d5ea-e0bc-4ae9-bb51-b35b6acc0e4a" stretchType="RelativeToBandHeight" x="495" y="0" width="156" height="15"/>
-							<box leftPadding="2" rightPadding="3">
-								<pen lineWidth="1.0"/>
-								<topPen lineWidth="0.0"/>
-								<leftPen lineWidth="0.0" lineStyle="Dotted"/>
-								<bottomPen lineWidth="0.0"/>
-								<rightPen lineWidth="0.0" lineStyle="Dotted"/>
-							</box>
-							<textElement verticalAlignment="Top">
-								<font size="10"/>
-							</textElement>
-							<textFieldExpression><![CDATA[$F{total_creditlimit}.subtract($F{total_creditused} )]]></textFieldExpression>
-						</textField>
-					</jr:listContents>
-				</jr:list>
-			</componentElement>
-			<componentElement>
-				<reportElement uuid="00184122-47e2-416d-8177-73dcb4773a36" stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="96" width="654" height="15" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[$F{z_wfscenariocredit_id}>0]]></printWhenExpression>
-				</reportElement>
-				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical" ignoreWidth="true">
-					<datasetRun subDataset="CreditBPOrgTrx" uuid="4dfccc03-f995-438c-9b74-d7cff3cbfba9">
-						<datasetParameter name="C_Order_ID">
-							<datasetParameterExpression><![CDATA[$P{RECORD_ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:listContents height="15" width="654">
-						<staticText>
-							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" stretchType="RelativeToBandHeight" x="233" y="0" width="62" height="15" isRemoveLineWhenBlank="true"/>
-							<textElement verticalAlignment="Top"/>
-							<text><![CDATA[Credit Used]]></text>
-						</staticText>
-						<staticText>
-							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" stretchType="RelativeToBandHeight" x="415" y="0" width="80" height="15" isRemoveLineWhenBlank="true"/>
+							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" stretchType="RelativeToBandHeight" x="400" y="0" width="80" height="15" isRemoveLineWhenBlank="true"/>
 							<textElement verticalAlignment="Top"/>
 							<text><![CDATA[Credit Available]]></text>
 						</staticText>
 						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToBandHeight" x="115" y="0" width="118" height="15"/>
+							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToBandHeight" x="75" y="0" width="120" height="15"/>
 							<box leftPadding="2" rightPadding="3">
 								<pen lineWidth="1.0"/>
 								<topPen lineWidth="0.0"/>
@@ -1023,7 +896,7 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 							<textFieldExpression><![CDATA[$F{so_creditlimit}]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToBandHeight" x="295" y="0" width="120" height="15"/>
+							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToBandHeight" x="275" y="0" width="120" height="15"/>
 							<box leftPadding="2" rightPadding="3">
 								<pen lineWidth="1.0"/>
 								<topPen lineWidth="0.0"/>
@@ -1037,7 +910,7 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 							<textFieldExpression><![CDATA[$F{so_creditused}]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToBandHeight" x="495" y="0" width="156" height="15"/>
+							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToBandHeight" x="480" y="0" width="156" height="15"/>
 							<box leftPadding="2" rightPadding="3">
 								<pen lineWidth="1.0"/>
 								<topPen lineWidth="0.0"/>
@@ -1051,15 +924,15 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 							<textFieldExpression><![CDATA[$F{so_creditlimit}.subtract( $F{so_creditused} )]]></textFieldExpression>
 						</textField>
 						<staticText>
-							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" stretchType="RelativeToBandHeight" x="0" y="0" width="115" height="15" isRemoveLineWhenBlank="true"/>
+							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" stretchType="RelativeToBandHeight" x="0" y="0" width="75" height="15" isRemoveLineWhenBlank="true"/>
 							<textElement verticalAlignment="Top"/>
-							<text><![CDATA[Credit Limit per OrgTrx]]></text>
+							<text><![CDATA[Credit Limit]]></text>
 						</staticText>
 					</jr:listContents>
 				</jr:list>
 			</componentElement>
 			<componentElement>
-				<reportElement uuid="04e556f1-6647-47ec-8fac-1f1920c3965a" x="0" y="111" width="155" height="15" isRemoveLineWhenBlank="true">
+				<reportElement uuid="04e556f1-6647-47ec-8fac-1f1920c3965a" x="0" y="96" width="150" height="15" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{z_wfscenarioaging_id}>0]]></printWhenExpression>
 				</reportElement>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical" ignoreWidth="true">
@@ -1069,9 +942,9 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="15" width="155">
+					<jr:listContents height="15" width="150">
 						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToTallestObject" x="80" y="0" width="75" height="15"/>
+							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToTallestObject" x="75" y="0" width="75" height="15"/>
 							<box leftPadding="2" rightPadding="3">
 								<pen lineWidth="1.0"/>
 								<topPen lineWidth="0.0"/>
@@ -1085,7 +958,7 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 							<textFieldExpression><![CDATA[$F{agingover}]]></textFieldExpression>
 						</textField>
 						<staticText>
-							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" x="0" y="0" width="80" height="15" isRemoveLineWhenBlank="true"/>
+							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" x="0" y="0" width="75" height="15" isRemoveLineWhenBlank="true"/>
 							<textElement/>
 							<text><![CDATA[Aging Over]]></text>
 						</staticText>
@@ -1093,7 +966,7 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 				</jr:list>
 			</componentElement>
 			<componentElement>
-				<reportElement uuid="cd55b218-e096-4f7e-992e-dd3307c3da11" x="0" y="126" width="155" height="15" isRemoveLineWhenBlank="true">
+				<reportElement uuid="cd55b218-e096-4f7e-992e-dd3307c3da11" x="0" y="111" width="150" height="15" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{z_wfscenarioprice_id}>0]]></printWhenExpression>
 				</reportElement>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical" ignoreWidth="true">
@@ -1103,14 +976,14 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="15" width="155">
+					<jr:listContents height="15" width="150">
 						<staticText>
-							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" x="0" y="0" width="80" height="15" isRemoveLineWhenBlank="true"/>
+							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" x="0" y="0" width="75" height="15" isRemoveLineWhenBlank="true"/>
 							<textElement/>
 							<text><![CDATA[Price Limit]]></text>
 						</staticText>
 						<textField pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="aa383e4b-7402-4840-9e5c-2411a8c3e99e" x="80" y="0" width="75" height="15"/>
+							<reportElement uuid="aa383e4b-7402-4840-9e5c-2411a8c3e99e" x="75" y="0" width="75" height="15"/>
 							<box leftPadding="2" rightPadding="3"/>
 							<textElement textAlignment="Right" verticalAlignment="Middle"/>
 							<textFieldExpression><![CDATA[$F{pricelimit}]]></textFieldExpression>
@@ -1119,7 +992,7 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 				</jr:list>
 			</componentElement>
 			<componentElement>
-				<reportElement uuid="11f826ff-7404-48ac-8769-19e4cb6871bf" x="0" y="141" width="155" height="15" isRemoveLineWhenBlank="true">
+				<reportElement uuid="11f826ff-7404-48ac-8769-19e4cb6871bf" x="0" y="126" width="150" height="15" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{z_wfscenariograndtotal_id}>0]]></printWhenExpression>
 				</reportElement>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical" ignoreWidth="true">
@@ -1129,14 +1002,14 @@ $V{SUBTOTAL}.subtract($V{DISCOUNT_TOTAL})]]></variableExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:listContents height="15" width="155">
+					<jr:listContents height="15" width="150">
 						<staticText>
-							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" x="0" y="0" width="80" height="15" isRemoveLineWhenBlank="true"/>
+							<reportElement uuid="76b0e42f-d38d-4481-b5cb-0ed2f1bbaeda" x="0" y="0" width="75" height="15" isRemoveLineWhenBlank="true"/>
 							<textElement/>
 							<text><![CDATA[Disc Total]]></text>
 						</staticText>
 						<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToTallestObject" x="80" y="0" width="75" height="15"/>
+							<reportElement uuid="7fb8b954-6149-4ef3-a0ff-73873f0c06f8" stretchType="RelativeToTallestObject" x="75" y="0" width="75" height="15"/>
 							<box leftPadding="2" rightPadding="3">
 								<pen lineWidth="1.0"/>
 								<topPen lineWidth="0.0"/>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SuratJalan" language="groovy" pageWidth="609" pageHeight="392" columnWidth="595" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" isSummaryWithPageHeaderAndFooter="true" uuid="328eb258-edbc-400a-986e-092bec7c3f0c">
-	<property name="ireport.zoom" value="1.2396694214876043"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="48"/>
+	<property name="ireport.zoom" value="2.143588810000005"/>
+	<property name="ireport.x" value="432"/>
+	<property name="ireport.y" value="52"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2"/>
 	</style>
@@ -210,14 +210,14 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	<pageHeader>
 		<band height="170" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="118254a4-2559-4495-a460-942f6d292fe3" style="Default" x="333" y="80" width="90" height="15"/>
+				<reportElement uuid="118254a4-2559-4495-a460-942f6d292fe3" style="Default" x="333" y="80" width="75" height="15"/>
 				<textElement verticalAlignment="Top">
 					<font size="10"/>
 				</textElement>
 				<text><![CDATA[Date]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="dd MMMMM yyyy" isBlankWhenNull="true">
-				<reportElement uuid="fab50f7b-16af-42f2-84ac-36077639d79f" style="Default" x="423" y="80" width="132" height="15"/>
+				<reportElement uuid="fab50f7b-16af-42f2-84ac-36077639d79f" style="Default" x="408" y="80" width="185" height="15"/>
 				<box leftPadding="2" bottomPadding="0" rightPadding="20"/>
 				<textElement verticalAlignment="Top">
 					<font size="10"/>
@@ -225,28 +225,28 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<textFieldExpression><![CDATA[$F{movementdate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="e6ca7102-ef64-4b83-b184-8dba86e80185" style="Default" x="333" y="95" width="90" height="15"/>
+				<reportElement uuid="e6ca7102-ef64-4b83-b184-8dba86e80185" style="Default" x="333" y="95" width="75" height="15"/>
 				<textElement verticalAlignment="Top">
 					<font size="10"/>
 				</textElement>
 				<text><![CDATA[SO No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="eabe9139-d8b1-48a7-b1cd-a9257aced14a" style="Default" x="414" y="80" width="10" height="15"/>
+				<reportElement uuid="eabe9139-d8b1-48a7-b1cd-a9257aced14a" style="Default" x="398" y="80" width="10" height="15"/>
 				<textElement verticalAlignment="Top">
 					<font size="10"/>
 				</textElement>
 				<text><![CDATA[ : ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="6f21a90d-f25c-42ee-9d5f-25f8ea14293c" style="Default" x="414" y="95" width="10" height="15"/>
+				<reportElement uuid="6f21a90d-f25c-42ee-9d5f-25f8ea14293c" style="Default" x="398" y="95" width="10" height="15"/>
 				<textElement verticalAlignment="Top">
 					<font size="10"/>
 				</textElement>
 				<text><![CDATA[ : ]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement uuid="d9d89b8d-9f88-4e17-845a-19a2e66275fb" style="Default" x="423" y="95" width="132" height="15"/>
+				<reportElement uuid="d9d89b8d-9f88-4e17-845a-19a2e66275fb" style="Default" x="408" y="95" width="185" height="15"/>
 				<box leftPadding="2" bottomPadding="0" rightPadding="20"/>
 				<textElement verticalAlignment="Top">
 					<font size="10"/>
@@ -269,24 +269,24 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<text><![CDATA[ShipTo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="a584e198-9696-4957-aa0e-3178d95cfbdf" x="333" y="65" width="90" height="15"/>
+				<reportElement uuid="a584e198-9696-4957-aa0e-3178d95cfbdf" x="333" y="65" width="75" height="15"/>
 				<textElement verticalAlignment="Top"/>
 				<text><![CDATA[Document No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="65510c2a-9218-4bda-b2de-f33daa41d388" x="333" y="110" width="90" height="15"/>
+				<reportElement uuid="65510c2a-9218-4bda-b2de-f33daa41d388" x="333" y="110" width="75" height="15"/>
 				<textElement verticalAlignment="Top"/>
 				<text><![CDATA[PO No.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="eabe9139-d8b1-48a7-b1cd-a9257aced14a" style="Default" x="414" y="65" width="10" height="15"/>
+				<reportElement uuid="eabe9139-d8b1-48a7-b1cd-a9257aced14a" style="Default" x="398" y="65" width="10" height="15"/>
 				<textElement verticalAlignment="Top">
 					<font size="10"/>
 				</textElement>
 				<text><![CDATA[ : ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="6f21a90d-f25c-42ee-9d5f-25f8ea14293c" style="Default" x="414" y="110" width="10" height="15"/>
+				<reportElement uuid="6f21a90d-f25c-42ee-9d5f-25f8ea14293c" style="Default" x="398" y="110" width="10" height="15"/>
 				<textElement verticalAlignment="Top">
 					<font size="10"/>
 				</textElement>
@@ -341,12 +341,12 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<textFieldExpression><![CDATA[$F{bp_location}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="ed27f475-d09c-4140-8147-107524f4179c" x="423" y="110" width="132" height="15"/>
+				<reportElement uuid="ed27f475-d09c-4140-8147-107524f4179c" x="408" y="110" width="185" height="15"/>
 				<textElement verticalAlignment="Top"/>
 				<textFieldExpression><![CDATA[$F{poreference}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="e260fc1a-bfb6-43f6-b4e5-518760a1337c" x="423" y="66" width="132" height="14"/>
+				<reportElement uuid="e260fc1a-bfb6-43f6-b4e5-518760a1337c" x="408" y="65" width="185" height="15"/>
 				<textElement verticalAlignment="Top"/>
 				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
 			</textField>
@@ -366,33 +366,8 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField>
 				<reportElement uuid="7ef7f18d-e89f-4f8d-a08e-29dd1e6d20c9" x="333" y="48" width="222" height="15">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & $F{flnstatus} == null ||
-(!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($F{flnstatus} == null ||
+(!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Left">
 					<font size="10"/>
@@ -406,151 +381,26 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<textFieldExpression><![CDATA[$F{shipmentnote}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="1100af6b-866a-40d2-ab15-4b0e63a21c6f" x="423" y="125" width="132" height="15">
-					<printWhenExpression><![CDATA[$F{flnstatus} == null || (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297)]]></printWhenExpression>
+				<reportElement uuid="1100af6b-866a-40d2-ab15-4b0e63a21c6f" x="408" y="125" width="185" height="15">
+					<printWhenExpression><![CDATA[($F{flnstatus} == null
+|| (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Top"/>
-				<textFieldExpression><![CDATA[(($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) ? $F{netdays} + " days" : "")
-+ (($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & $F{netdays}.doubleValue() == 0 ?
-  (" / "+ "Rp. " + new java.text.DecimalFormat("#,##0").format(Double.valueOf($F{grandtotal})))
-   : "")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{netdays}.doubleValue() == 0 ? ($F{netdays} + " days") +
+(" / "+ "Rp. " + new java.text.DecimalFormat("#,##0").format(Double.valueOf($F{grandtotal})))
+   : $F{netdays} + " days")]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="ee592937-429b-46fe-963d-5786b2d3212b" x="333" y="125" width="90" height="15">
-					<printWhenExpression><![CDATA[$F{flnstatus} == null || (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297)]]></printWhenExpression>
+				<reportElement uuid="ee592937-429b-46fe-963d-5786b2d3212b" x="333" y="125" width="75" height="15">
+					<printWhenExpression><![CDATA[($F{flnstatus} == null
+|| (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Top"/>
-				<textFieldExpression><![CDATA[(($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & $F{netdays}.doubleValue() == 0)?
-"TOP / Grand Total" : (($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))) ? "TOP" : ""]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{netdays}.doubleValue() == 0 ? "TOP / Grand Total" : "TOP")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="376a020d-1555-4663-b4ff-da24aa8749a3" style="Default" x="414" y="125" width="10" height="15">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & ($F{flnstatus} == null
+				<reportElement uuid="376a020d-1555-4663-b4ff-da24aa8749a3" style="Default" x="398" y="125" width="10" height="15">
+					<printWhenExpression><![CDATA[($F{flnstatus} == null
 || (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Top">
@@ -560,9 +410,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</staticText>
 			<staticText>
 				<reportElement uuid="d50a7e7d-3fd7-4e9a-8cdb-84cc1b0eee2a" x="275" y="48" width="18" height="15">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("11412") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") ) & $F{greeting}.contains( "PO" )]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{greeting}.equalsIgnoreCase( "PO" )]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="3"/>
 				<textElement textAlignment="Center"/>
@@ -570,33 +418,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement uuid="82eb40bd-2e27-4d22-ab36-515ef3577ffe" x="293" y="48" width="22" height="15">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539"))
-& $F{invoicerule}.equalsIgnoreCase( "Immediate" )]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{invoicerule}.equalsIgnoreCase( "Immediate" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["T"]]></textFieldExpression>
@@ -698,32 +520,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 			</textField>
 			<staticText>
 				<reportElement uuid="33b5c297-e42a-4b3c-b55e-e18d74d04dd4" positionType="FixRelativeToBottom" x="246" y="11" width="197" height="32" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & ($F{flnstatus} == null ||
+					<printWhenExpression><![CDATA[($F{flnstatus} == null ||
 (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -734,33 +531,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 			</staticText>
 			<staticText>
 				<reportElement uuid="d4d5e5ee-0dc3-42d8-9c58-e1543ef8d374" x="543" y="49" width="52" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))
-& $F{priorityrule}.equalsIgnoreCase ("1")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{priorityrule}.equalsIgnoreCase ("1")]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true"/>
@@ -769,33 +540,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 			</staticText>
 			<staticText>
 				<reportElement uuid="0fb90c13-9d72-4e47-8177-567bf0a18d02" positionType="FixRelativeToBottom" x="543" y="34" width="52" height="15" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))
-& $F{istodayfp}.equalsIgnoreCase( "Y" )]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{istodayfp}.equalsIgnoreCase( "Y" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Center" verticalAlignment="Top">
@@ -804,34 +549,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<text><![CDATA[URGENT]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="afb3a010-2af5-4989-8594-dfc814adedb8" positionType="FixRelativeToBottom" x="495" y="11" width="100" height="23" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))]]></printWhenExpression>
-				</reportElement>
+				<reportElement uuid="afb3a010-2af5-4989-8594-dfc814adedb8" positionType="FixRelativeToBottom" x="495" y="11" width="100" height="23" isRemoveLineWhenBlank="true"/>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Right">
 					<font size="10"/>
@@ -840,36 +558,9 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 ($F{istest}.equalsIgnoreCase( "Y" )?"Customer Walk IN":"")]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="348a851f-ffa8-41d6-a295-02bce43b08ed" positionType="FixRelativeToBottom" x="495" y="73" width="100" height="17" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))]]></printWhenExpression>
-				</reportElement>
+				<reportElement uuid="348a851f-ffa8-41d6-a295-02bce43b08ed" positionType="FixRelativeToBottom" x="475" y="73" width="120" height="17" isRemoveLineWhenBlank="true"/>
 				<box leftPadding="3" rightPadding="3"/>
-				<textElement textAlignment="Right">
+				<textElement textAlignment="Left">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sales_name}.replaceAll("[0-9-]", "") +
@@ -904,33 +595,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 			</textField>
 			<staticText>
 				<reportElement uuid="8541152b-587c-432a-bdc2-7d4b8cfb551d" positionType="FixRelativeToBottom" x="543" y="34" width="52" height="15" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))
-& $F{istodayfp}.equalsIgnoreCase( "Y" )]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{istodayfp}.equalsIgnoreCase( "Y" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Center" verticalAlignment="Top">
@@ -939,34 +604,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<text><![CDATA[URGENT]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="0bb3ec65-d53c-4ef7-ae40-7d3fb0f96556" positionType="FixRelativeToBottom" x="495" y="11" width="100" height="23" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))]]></printWhenExpression>
-				</reportElement>
+				<reportElement uuid="0bb3ec65-d53c-4ef7-ae40-7d3fb0f96556" positionType="FixRelativeToBottom" x="495" y="11" width="100" height="23" isRemoveLineWhenBlank="true"/>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Right">
 					<font size="10"/>
@@ -976,33 +614,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 			</textField>
 			<staticText>
 				<reportElement uuid="92a1cb4c-4e9b-408f-9e1c-c0816e026389" x="543" y="49" width="52" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))
-& $F{priorityrule}.equalsIgnoreCase ("1")]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{priorityrule}.equalsIgnoreCase ("1")]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
 					<font size="8" isBold="true" isStrikeThrough="false"/>
@@ -1011,32 +623,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 			</staticText>
 			<staticText>
 				<reportElement uuid="531bdf0a-83a3-4a2a-b8b3-01dd0daaaada" positionType="FixRelativeToBottom" x="246" y="11" width="197" height="32" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236")) & ($F{flnstatus} == null ||
+					<printWhenExpression><![CDATA[($F{flnstatus} == null ||
 (!$F{flnstatus}.equalsIgnoreCase( "Pengembalian Barang Retur" ) & $F{doctype_id}.doubleValue() == 550297))]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -1046,36 +633,9 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<text><![CDATA[*Dengan ditanda tangani surat jalan ini, Bapak/Ibu sudah menerima invoice copy.]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="d259d5e3-62fb-47b9-a248-db13f9169c49" positionType="FixRelativeToBottom" x="495" y="73" width="100" height="17" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[($F{bp_value}.equals("03806") || $F{bp_value}.equals("00664")
-|| $F{bp_value}.equals("01815") || $F{bp_value}.equals("07686")
-|| $F{bp_value}.equals("07826") || $F{bp_value}.equals("13333")
-|| $F{bp_value}.equals("08751") || $F{bp_value}.equals("01549")
-|| $F{bp_value}.equals("03810") || $F{bp_value}.equals("02409")
-|| $F{bp_value}.equals("01159") || $F{bp_value}.equals("12816")
-|| $F{bp_value}.equals("08341") || $F{bp_value}.equals("00251")
-|| $F{bp_value}.equals("03715") || $F{bp_value}.equals("08311")
-|| $F{bp_value}.equals("07636") || $F{bp_value}.equals("00107")
-|| $F{bp_value}.equals("04633") || $F{bp_value}.equals("05703")
-|| $F{bp_value}.equals("11412") || $F{bp_value}.equals("05267")
-|| $F{bp_value}.equals("06545") || $F{bp_value}.equals("05477")
-|| $F{bp_value}.equals("07598") || $F{bp_value}.equals("12394")
-|| $F{bp_value}.equals("07401") || $F{bp_value}.equals("08235")
-|| $F{bp_value}.equals("08064") || $F{bp_value}.equals("11616")
-|| $F{bp_value}.equals("08222") || $F{bp_value}.equals("05619")
-|| $F{bp_value}.equals("01870") || $F{bp_value}.equals("08581")
-|| $F{bp_value}.equals("01322") || $F{bp_value}.equals("01681")
-|| $F{bp_value}.equals("03126") || $F{bp_value}.equals("05420")
-|| $F{bp_value}.equals("04904") || $F{bp_value}.equals("06374")
-|| $F{bp_value}.equals("10434") || $F{bp_value}.equals("05424")
-|| $F{bp_value}.equals("10465") || $F{bp_value}.equals("11552")
-|| $F{bp_value}.equals("00115") || $F{bp_value}.equals("06586")
-|| $F{bp_value}.equals("03915") || $F{bp_value}.equals("07875")
-|| $F{bp_value}.equals("08054") || $F{bp_value}.equals("10522")
-|| $F{bp_value}.equals("13539") || $F{bp_value}.equals("00236"))]]></printWhenExpression>
-				</reportElement>
+				<reportElement uuid="d259d5e3-62fb-47b9-a248-db13f9169c49" positionType="FixRelativeToBottom" x="475" y="73" width="120" height="17" isRemoveLineWhenBlank="true"/>
 				<box leftPadding="3" rightPadding="3"/>
-				<textElement textAlignment="Right">
+				<textElement textAlignment="Left">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sales_name}.replaceAll("[0-9-]", "") +
