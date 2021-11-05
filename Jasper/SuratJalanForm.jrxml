@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SuratJalan" language="groovy" pageWidth="609" pageHeight="392" columnWidth="595" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" isSummaryWithPageHeaderAndFooter="true" uuid="328eb258-edbc-400a-986e-092bec7c3f0c">
-	<property name="ireport.zoom" value="2.143588810000005"/>
-	<property name="ireport.x" value="432"/>
-	<property name="ireport.y" value="52"/>
+	<property name="ireport.zoom" value="0.683013455365072"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="190"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2"/>
 	</style>
@@ -91,7 +91,8 @@
 	o.c_doctype_id DocType_ID,
 	o.FLNStatus,
 	parse('AD_User',o.SalesRep_ID,1) SALES_NAME,
-	parse('AD_User',COALESCE(oq.CreatedBy,o.CreatedBy),1) SO_CREATEDBY
+	parse('AD_User',COALESCE(oq.CreatedBy,o.CreatedBy),1) SO_CREATEDBY,
+	bp.C_BP_Group_ID
 FROM M_InOutLine iol
 INNER JOIN M_InOut io ON (io.M_InOut_ID = iol.M_InOut_ID)
 INNER JOIN AD_Org org ON (org.AD_Org_ID = io.AD_Org_ID)
@@ -163,6 +164,7 @@ ORDER BY iol.line]]>
 	<field name="flnstatus" class="java.lang.String"/>
 	<field name="sales_name" class="java.lang.String"/>
 	<field name="so_createdby" class="java.lang.String"/>
+	<field name="c_bp_group_id" class="java.math.BigDecimal"/>
 	<variable name="ISZERO" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{unitsperpallet}.equals( BigDecimal.valueOf(0) )]]></variableExpression>
 	</variable>
@@ -202,6 +204,15 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<reportElement uuid="e9a04fd2-5641-4b66-bd14-a36040144e79" x="0" y="0" width="555" height="370"/>
 				<imageExpression><![CDATA["http://erp:8090/jasper/watermark.png"]]></imageExpression>
 			</image>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="3d86537d-e71d-493e-95a8-1044d567f2a5" x="0" y="107" width="595" height="167" forecolor="#FF0000">
+					<printWhenExpression><![CDATA[$F{c_bp_group_id}.doubleValue() == 2200056]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="52"/>
+				</textElement>
+				<textFieldExpression><![CDATA["JANGAN DIPROSES !"]]></textFieldExpression>
+			</textField>
 		</band>
 	</background>
 	<title>
