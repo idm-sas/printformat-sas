@@ -36,7 +36,7 @@ LEFT JOIN (
 	FROM C_BPartner_Location bplx
 	LEFT JOIN C_Invoice ix ON (ix.C_BPartner_Location_ID = bplx.C_BPartner_Location_ID)
 	WHERE ix.Z_Kwitansi_ID = COALESCE($P{RECORD_ID},$P{Z_Kwitansi_ID})
-	AND bplx.IsActive='Y'
+	--AND bplx.IsActive='Y'
 	ORDER BY bplx.IsTaxTo DESC, bplx.IsTax DESC
 	LIMIT 1
 ) bpl ON (bpl.Z_Kwitansi_ID = k.Z_Kwitansi_ID)
