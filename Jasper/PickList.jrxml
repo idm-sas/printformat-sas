@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PickList" language="groovy" pageWidth="612" pageHeight="396" columnWidth="584" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" uuid="c979cd7c-a35f-4c63-8a1c-b4a96faab84e">
-	<property name="ireport.zoom" value="0.8467108950806664"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="189"/>
+	<property name="ireport.zoom" value="3.215383215000002"/>
+	<property name="ireport.x" value="1216"/>
+	<property name="ireport.y" value="633"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2" rightPadding="5"/>
 	</style>
@@ -105,8 +105,7 @@
 	o.istest,
 	ox.AD_Org_ID OrgTrxID,
 	p.UnitsPerPallet,
-	ol.Source_OrderLine_ID,
-	bp.C_BP_Group_ID
+	ol.Source_OrderLine_ID
 FROM C_OrderLine ol
 INNER JOIN C_Order o ON (o.C_Order_ID = ol.C_Order_ID)
 LEFT JOIN C_Tax t ON (t.C_Tax_ID = ol.C_Tax_ID)
@@ -178,7 +177,6 @@ WHERE	1 = 1
 	<field name="orgtrxid" class="java.math.BigDecimal"/>
 	<field name="unitsperpallet" class="java.math.BigDecimal"/>
 	<field name="source_orderline_id" class="java.math.BigDecimal"/>
-	<field name="c_bp_group_id" class="java.math.BigDecimal"/>
 	<variable name="LINENETAMT_1" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{linenetamt}]]></variableExpression>
 	</variable>
@@ -235,22 +233,13 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<imageExpression><![CDATA["http://erp:8090/jasper/watermark.png"]]></imageExpression>
 			</image>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="de2e6fa1-3daf-437e-8ca8-793a2bf34b5b" x="2" y="52" width="582" height="167" forecolor="#FF0000">
+				<reportElement uuid="de2e6fa1-3daf-437e-8ca8-793a2bf34b5b" x="0" y="99" width="582" height="167" forecolor="#CCCCCC">
 					<printWhenExpression><![CDATA[!$F{docstatus}.equals( "CO" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font size="52"/>
+					<font size="62"/>
 				</textElement>
 				<textFieldExpression><![CDATA["COMPLETE DULU"]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement uuid="608ee536-a179-4a86-b619-c5d79bec4b73" x="0" y="126" width="582" height="167" forecolor="#FF0000">
-					<printWhenExpression><![CDATA[$F{c_bp_group_id}.doubleValue() == 2200056]]></printWhenExpression>
-				</reportElement>
-				<textElement textAlignment="Center">
-					<font size="52"/>
-				</textElement>
-				<textFieldExpression><![CDATA["JANGAN DIPROSES !"]]></textFieldExpression>
 			</textField>
 		</band>
 	</background>
