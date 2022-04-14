@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CustomerInvoiceForm" pageWidth="694" pageHeight="396" whenNoDataType="AllSectionsNoDetail" columnWidth="686" leftMargin="4" rightMargin="4" topMargin="5" bottomMargin="4" isSummaryWithPageHeaderAndFooter="true" uuid="5c6c75a0-b489-4742-a475-51ad62c3a1fc">
-	<property name="ireport.zoom" value="1.99650000000001"/>
-	<property name="ireport.x" value="320"/>
-	<property name="ireport.y" value="133"/>
+	<property name="ireport.zoom" value="4.2796750591650286"/>
+	<property name="ireport.x" value="1829"/>
+	<property name="ireport.y" value="1285"/>
 	<subDataset name="PAGAR" whenResourceMissingType="Empty" uuid="45e6538e-8ccc-4142-a695-5d8280426ed6">
 		<parameter name="RECORD_ID" class="java.lang.Integer" isForPrompting="false"/>
 		<parameter name="C_Invoice_ID" class="java.math.BigDecimal" isForPrompting="false"/>
@@ -103,7 +103,7 @@ AND p.Group2 IN ('Y GIMMICK','Y POIN')]]>
 	round((case when ol.source_orderline_id is null then
 	   (select coalesce(sum(
 	      case when ix.c_doctypetarget_id=1000002 or ix.c_doctypetarget_id=1000004 then
-		ilx.linenetamt/1.1
+		(case when ol.dateordered >= '2022-04-01 00:00:00' then ilx.linenetamt/1.11 else ilx.linenetamt/1.1 end)
 	      else ilx.linenetamt end),0)
 	   from c_invoiceline ilx
 	   inner join c_invoice ix on (ix.c_invoice_id=ilx.c_invoice_id)
@@ -136,7 +136,7 @@ AND p.Group2 IN ('Y GIMMICK','Y POIN')]]>
 	p.UnitsPerPallet,
 	CASE WHEN COALESCE(pin.AD_Process_ID,0) = 550297 THEN TRUE ELSE FALSE END IsPreview,
 	head.group1 as PAKET_NAME,
-	ROUND(COALESCE(CASE WHEN i.c_doctypetarget_id=1000002 OR i.c_doctypetarget_id=1000004 THEN pp.pricelist/1.1
+	ROUND(COALESCE(CASE WHEN i.c_doctypetarget_id=1000002 OR i.c_doctypetarget_id=1000004 THEN (case when ol.dateordered >= '2022-04-01 00:00:00' then pp.pricelist/1.11 else pp.pricelist/1.1 end)
 	ELSE pp.pricelist END, 0),2) AS PAKET_PRICE,
 	g.name Greeting,
 	(SELECT MAX(ux.Name) FROM AD_User ux INNER JOIN C_BPartner bpbx ON (bpbx.C_BPartner_ID = ux.C_BPartner_ID) WHERE bpbx.C_BPartner_ID = bp.Billing_ID) BILLING_USERNAME,
@@ -296,13 +296,15 @@ ORDER BY il.Line]]>
 ($F{product_name}!=null && $F{m_product_category_id}.intValue()!=1000011) ||
 	($F{relatedproduct_id}!=null)?
     (($F{c_doctypetarget_id}.intValue()==1000002 || $F{c_doctypetarget_id}.intValue()==1000004)?
-        $F{pricelist}.divide(new BigDecimal(1.1),8,java.math.RoundingMode.HALF_UP)
+        ((new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateinvoiced}.toString()).before((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) ? $F{pricelist}.divide(new BigDecimal(1.1),8,java.math.RoundingMode.HALF_UP)
+         : $F{pricelist}.divide(new BigDecimal(1.11),8,java.math.RoundingMode.HALF_UP))
         : $F{pricelist})
     : new BigDecimal(0))]]></variableExpression>
 	</variable>
 	<variable name="PRICEACTUAL" class="java.math.BigDecimal" resetType="None">
 		<variableExpression><![CDATA[(($F{c_doctypetarget_id}.intValue()==1000002 || $F{c_doctypetarget_id}.intValue()==1000004)?
-        $F{priceactual}.divide(new BigDecimal(1.1),8,java.math.RoundingMode.HALF_UP)
+      ((new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateinvoiced}.toString()).before((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) ? $F{priceactual}.divide(new BigDecimal(1.1),8,java.math.RoundingMode.HALF_UP)
+            :$F{priceactual}.divide(new BigDecimal(1.11),8,java.math.RoundingMode.HALF_UP))
         : $F{priceactual})]]></variableExpression>
 	</variable>
 	<variable name="AMOUNT" class="java.math.BigDecimal" resetType="None">
@@ -702,7 +704,7 @@ $F{product_name}.endsWith( "@1" ) ? ("- Roll")
 			<textField pattern="dd-MMM-yyyy">
 				<reportElement uuid="93cc25e0-4e6a-4755-b58a-d30ddb1e85a9" x="294" y="59" width="87" height="15"/>
 				<box leftPadding="3"/>
-				<textElement>
+				<textElement textAlignment="Left">
 					<font isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{due_date}]]></textFieldExpression>
@@ -1240,13 +1242,23 @@ $V{DISCOUNT_STANDARD} : $V{DISCOUNT_PAKET}]]></textFieldExpression>
 				</staticText>
 				<staticText>
 					<reportElement uuid="d20d67a3-17c3-4f30-b667-bc2951ba29b4" x="1" y="60" width="96" height="15" isRemoveLineWhenBlank="true">
-						<printWhenExpression><![CDATA[($F{c_doctypetarget_id}.intValue()==1000002||$F{c_doctypetarget_id}.intValue()==1000004)]]></printWhenExpression>
+						<printWhenExpression><![CDATA[(new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateinvoiced}.toString()).before((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) && ($F{c_doctypetarget_id}.intValue()==1000002||$F{c_doctypetarget_id}.intValue()==1000004)]]></printWhenExpression>
 					</reportElement>
 					<box rightPadding="3"/>
 					<textElement verticalAlignment="Middle">
 						<font isBold="false"/>
 					</textElement>
 					<text><![CDATA[VAT 10%]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="99d42ed5-f1a9-476b-b000-72037aaf50d9" x="1" y="60" width="96" height="15" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA[(new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateinvoiced}.toString()).after((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) && ($F{c_doctypetarget_id}.intValue()==1000002||$F{c_doctypetarget_id}.intValue()==1000004)]]></printWhenExpression>
+					</reportElement>
+					<box rightPadding="3"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="false"/>
+					</textElement>
+					<text><![CDATA[VAT 11%]]></text>
 				</staticText>
 			</frame>
 		</band>

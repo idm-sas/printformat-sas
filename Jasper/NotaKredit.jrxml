@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NotaKredit" pageWidth="609" pageHeight="396" columnWidth="585" leftMargin="12" rightMargin="12" topMargin="5" bottomMargin="20" uuid="5c6c75a0-b489-4742-a475-51ad62c3a1fc">
 	<property name="ireport.zoom" value="1.9965000000000097"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="421"/>
 	<property name="ireport.y" value="348"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<parameter name="C_Invoice_ID" class="java.math.BigDecimal"/>
@@ -170,16 +170,21 @@ ORDER BY il.Line, il.C_OrderLine_ID]]>
 	</variable>
 	<variable name="PRICELIST" class="java.math.BigDecimal" resetType="Group" resetGroup="Product">
 		<variableExpression><![CDATA[$F{c_doctypetarget_id}.intValue()==550293?
-    (($F{pricelist}.divide(new BigDecimal(1.1),2,java.math.RoundingMode.HALF_UP)).compareTo( new BigDecimal(0) ) != 0 ?
+    ((new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateinvoiced}.toString()).before((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) ? (($F{pricelist}.divide(new BigDecimal(1.1),2,java.math.RoundingMode.HALF_UP)).compareTo( new BigDecimal(0) ) != 0 ?
         $F{pricelist}.divide(new BigDecimal(1.1),2,java.math.RoundingMode.HALF_UP) :
-        $F{product_code}!= null ? $F{priceactual}.divide(new BigDecimal(1.1),2,java.math.RoundingMode.HALF_UP) : BigDecimal.valueOf(0)
+        $F{product_code}!= null ? $F{priceactual}.divide(new BigDecimal(1.1),2,java.math.RoundingMode.HALF_UP) : BigDecimal.valueOf(0))
+    : ($F{pricelist}.divide(new BigDecimal(1.11),2,java.math.RoundingMode.HALF_UP)).compareTo( new BigDecimal(0) ) != 0 ?
+        $F{pricelist}.divide(new BigDecimal(1.11),2,java.math.RoundingMode.HALF_UP) :
+        $F{product_code}!= null ? $F{priceactual}.divide(new BigDecimal(1.11),2,java.math.RoundingMode.HALF_UP) : BigDecimal.valueOf(0)
     )
 : ($F{pricelist}.compareTo( new BigDecimal(0) ) != 0 ? $F{pricelist} : $F{product_code} != null ? $F{priceactual} : BigDecimal.valueOf(0))]]></variableExpression>
 	</variable>
 	<variable name="PRICEACTUAL" class="java.math.BigDecimal" resetType="Group" resetGroup="Product">
 		<variableExpression><![CDATA[$F{c_doctypetarget_id}.intValue()==550293 ?
-$F{priceactual}.divide(new BigDecimal(1.1),2,java.math.RoundingMode.HALF_UP) :
-$F{priceactual}]]></variableExpression>
+((new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateinvoiced}.toString()).before((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) ?
+	$F{priceactual}.divide(new BigDecimal(1.1),2,java.math.RoundingMode.HALF_UP)
+   : $F{priceactual}.divide(new BigDecimal(1.11),2,java.math.RoundingMode.HALF_UP))
+: $F{priceactual}]]></variableExpression>
 	</variable>
 	<variable name="QTY" class="java.math.BigDecimal" resetType="Group" resetGroup="Product" calculation="Sum">
 		<variableExpression><![CDATA[$F{qtyentered}]]></variableExpression>
@@ -684,7 +689,8 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 						<rightPen lineWidth="0.0" lineStyle="Dotted"/>
 					</box>
 					<textElement verticalAlignment="Top"/>
-					<textFieldExpression><![CDATA["VAT 10%"]]></textFieldExpression>
+					<textFieldExpression><![CDATA[(new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateinvoiced}.toString()).before((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) ?
+"VAT 10%" : "VAT 11%"]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" x="1" y="0" width="96" height="15"/>

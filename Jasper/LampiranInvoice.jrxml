@@ -32,7 +32,7 @@
 	(case when ol.source_orderline_id is null then
 	   (select coalesce(sum(
 	      case when ix.c_doctypetarget_id=1000002 or ix.c_doctypetarget_id=1000004 then
-		ilx.linenetamt/1.1
+		(case when ol.dateordered >= '2022-04-01 00:00:00' then ilx.linenetamt/1.11 else ilx.linenetamt/1.1 end)
 	      else ilx.linenetamt end),0)
 	   from c_invoiceline ilx
 	   inner join c_invoice ix on (ix.c_invoice_id=ilx.c_invoice_id)

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SalesOrderForm" language="groovy" pageWidth="710" pageHeight="792" columnWidth="654" leftMargin="28" rightMargin="28" topMargin="36" bottomMargin="36" uuid="c979cd7c-a35f-4c63-8a1c-b4a96faab84e">
 	<property name="ireport.zoom" value="1.500000000000006"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="677"/>
+	<property name="ireport.x" value="313"/>
+	<property name="ireport.y" value="437"/>
 	<subDataset name="CreditBPOrgTrx" uuid="af3dc438-5502-435a-85e0-e1e83cf39a89">
 		<parameter name="C_Order_ID" class="java.lang.Integer">
 			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
@@ -297,13 +297,15 @@ ORDER BY ol.Line]]>
 	<variable name="PRICELIST" class="java.math.BigDecimal" resetType="Column">
 		<variableExpression><![CDATA[($F{product_name}!=null && $F{m_product_category_id}.intValue()!=1000011)?
     (($F{c_doctypetarget_id}.intValue()==1000030 || $F{c_doctypetarget_id}.intValue()==1000026 || $F{c_doctypetarget_id}.intValue()==1000027)?
-        $F{line_pricelist}.divide(new BigDecimal(1.1),8,java.math.RoundingMode.HALF_UP)
+        ((new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateordered}.toString()).before((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) ? $F{line_pricelist}.divide(new BigDecimal(1.1),8,java.math.RoundingMode.HALF_UP)
+            : $F{line_pricelist}.divide(new BigDecimal(1.11),8,java.math.RoundingMode.HALF_UP))
         : $F{line_pricelist})
     : new BigDecimal(0)]]></variableExpression>
 	</variable>
 	<variable name="PRICEACTUAL" class="java.math.BigDecimal" resetType="Column">
 		<variableExpression><![CDATA[(($F{c_doctypetarget_id}.intValue()==1000030 || $F{c_doctypetarget_id}.intValue()==1000026 || $F{c_doctypetarget_id}.intValue()==1000027)?
-        $F{priceactual}.divide(new BigDecimal(1.1),8,java.math.RoundingMode.HALF_UP)
+        ((new SimpleDateFormat("yyyy-MM-dd")).parse($F{dateordered}.toString()).before((new SimpleDateFormat("yyyy-MM-dd")).parse("2022-04-01")) ? $F{priceactual}.divide(new BigDecimal(1.1),8,java.math.RoundingMode.HALF_UP)
+            : $F{priceactual}.divide(new BigDecimal(1.11),8,java.math.RoundingMode.HALF_UP))
         : $F{priceactual})]]></variableExpression>
 	</variable>
 	<variable name="DISCOUNT" class="java.math.BigDecimal">
