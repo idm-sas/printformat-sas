@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SO Return" language="groovy" pageWidth="612" pageHeight="396" columnWidth="598" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" uuid="a200967b-3eff-4f56-b465-76b4cc81bdf2">
 	<property name="ireport.zoom" value="1.126972201352368"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="82"/>
+	<property name="ireport.y" value="144"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -32,7 +32,8 @@
 	ol.Line,
 	parse('M_Warehouse',o.M_Warehouse_ID,1) WAREHOUSE_NAME,
 	o.NCNo,
-	CASE WHEN SUBSTR(dt.Name,3,1) = 'T' THEN 'Y' ELSE 'N' END AS ISTAX
+	CASE WHEN SUBSTR(dt.Name,3,1) = 'T' THEN 'Y' ELSE 'N' END AS ISTAX,
+	ol.C_Tax_ID
 FROM C_Order o
 INNER JOIN C_OrderLine ol ON (ol.C_Order_ID = o.C_Order_ID)
 LEFT JOIN C_BPartner_Location bpl ON (bpl.C_BPartner_Location_ID = o.Bill_Location_ID)
@@ -65,8 +66,12 @@ ORDER BY ol.Line]]>
 	<field name="warehouse_name" class="java.lang.String"/>
 	<field name="ncno" class="java.lang.String"/>
 	<field name="istax" class="java.lang.String"/>
+	<field name="c_tax_id" class="java.math.BigDecimal"/>
 	<variable name="PRICE" class="java.math.BigDecimal" resetType="Column">
-		<variableExpression><![CDATA[$F{istax}.equals("Y") ? $F{priceentered} / 1.1 : $F{priceentered}]]></variableExpression>
+		<variableExpression><![CDATA[$F{istax}.equals("Y") ? ($F{c_tax_id}.intValue() == 1000001 ?
+    $F{priceentered} / 1.1 : ($F{c_tax_id}.intValue() == 2200012 ?
+    $F{priceentered} / 1.11 : $F{priceentered}))
+: $F{priceentered}]]></variableExpression>
 	</variable>
 	<variable name="LINEAMOUNT" class="java.math.BigDecimal" resetType="Column">
 		<variableExpression><![CDATA[$V{PRICE} * $F{qtyentered}]]></variableExpression>
@@ -75,7 +80,10 @@ ORDER BY ol.Line]]>
 		<variableExpression><![CDATA[$V{LINEAMOUNT}]]></variableExpression>
 	</variable>
 	<variable name="TAXAMOUNT" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[$F{istax}.equals("Y") ? $V{TOTALAMOUNT} * 0.1 : 0]]></variableExpression>
+		<variableExpression><![CDATA[$F{istax}.equals("Y") ? ($F{c_tax_id}.intValue() == 1000001 ?
+    $V{TOTALAMOUNT} * 0.1 : ($F{c_tax_id}.intValue() == 2200012 ?
+    $V{TOTALAMOUNT} * 0.11 : 0))
+: 0]]></variableExpression>
 	</variable>
 	<variable name="GRANDTOTAL" class="java.math.BigDecimal">
 		<variableExpression><![CDATA[$V{TOTALAMOUNT} + $V{TAXAMOUNT}]]></variableExpression>
