@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InventoryMove" language="groovy" pageWidth="603" pageHeight="464" columnWidth="579" leftMargin="12" rightMargin="12" topMargin="12" bottomMargin="12" uuid="82e95c18-ca4f-4631-b3ef-f00d859fe9d0">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="76"/>
-	<property name="ireport.y" value="144"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="246"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="11">
 		<box leftPadding="2"/>
 	</style>
@@ -68,7 +68,8 @@
 	parse('AD_User',m.CreatedBy,1) CREATED_BY,
 	parse('AD_Org',bp.ad_orgbp_id,1) LINK_ORG,
 	ot.AD_Org_ID OrgTrxID,
-	p.UnitsPerPallet
+	p.UnitsPerPallet,
+	ot.Description ORGTRXDES
 FROM M_MovementLine ml
 INNER JOIN M_Movement m ON (ml.M_Movement_ID = m.M_Movement_ID)
 LEFT JOIN AD_Org ot ON (ot.AD_Org_ID = m.AD_OrgTrx_ID)
@@ -112,6 +113,7 @@ Order by Line]]>
 	<field name="link_org" class="java.lang.String"/>
 	<field name="orgtrxid" class="java.math.BigDecimal"/>
 	<field name="unitsperpallet" class="java.math.BigDecimal"/>
+	<field name="orgtrxdes" class="java.lang.String"/>
 	<variable name="NOMOR" class="java.lang.Integer" calculation="Count">
 		<variableExpression><![CDATA[$F{documentno}]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
@@ -125,7 +127,13 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	</variable>
 	<variable name="ISERROR" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$V{ISZERO} && $F{orgtrxid}==1000025 ? false :
-($F{orgtrxid}==1000025 && $F{movementqty}.remainder( $F{unitsperpallet},MathContext.DECIMAL32 ).compareTo( java.math.BigDecimal.valueOf( 0 ) )==0? false : true)]]></variableExpression>
+(($F{orgtrxid}==1000025 || !$V{ISZERO}) && $F{movementqty}.remainder( $F{unitsperpallet},MathContext.DECIMAL32 ).compareTo( java.math.BigDecimal.valueOf( 0 ) )==0? false : true)]]></variableExpression>
+	</variable>
+	<variable name="IS_SUPREME" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{orgtrxid}== 1000025]]></variableExpression>
+	</variable>
+	<variable name="IS_TR" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{orgtrxdes}.contains( "TR" )]]></variableExpression>
 	</variable>
 	<background>
 		<band height="440">
@@ -394,7 +402,7 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="d2d53063-095d-4822-99e5-3d34fd31af3a" style="Detail" stretchType="RelativeToTallestObject" x="473" y="0" width="60" height="15">
-					<printWhenExpression><![CDATA[$F{orgtrxid} == 1000025]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
@@ -405,7 +413,10 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{ISERROR}? "Error" : (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Roll")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{ISERROR}? "Error"
+: $V{IS_SUPREME} && !$V{ISZERO}? (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Roll")
+        : $V{IS_TR} && !$V{ISZERO} ? (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Set")
+            : "Error"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement uuid="e4287ff9-ea68-4ca0-b107-5d451292e888" style="Detail" stretchType="RelativeToTallestObject" x="141" y="0" width="278" height="15"/>
@@ -448,7 +459,7 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="d2d53063-095d-4822-99e5-3d34fd31af3a" style="Detail" stretchType="RelativeToTallestObject" x="419" y="0" width="54" height="15">
-					<printWhenExpression><![CDATA[$F{orgtrxid} == 1000025]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.0"/>
@@ -463,7 +474,7 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="d2d53063-095d-4822-99e5-3d34fd31af3a" style="Detail" stretchType="RelativeToTallestObject" x="419" y="0" width="114" height="15">
-					<printWhenExpression><![CDATA[$F{orgtrxid} != 1000025]]></printWhenExpression>
+					<printWhenExpression><![CDATA[(!$V{IS_SUPREME} && $V{ISZERO})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="10">
 					<topPen lineWidth="0.0"/>

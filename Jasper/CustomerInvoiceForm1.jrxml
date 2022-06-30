@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CustomerInvoiceForm" pageWidth="694" pageHeight="396" whenNoDataType="AllSectionsNoDetail" columnWidth="686" leftMargin="4" rightMargin="4" topMargin="5" bottomMargin="4" isSummaryWithPageHeaderAndFooter="true" uuid="5c6c75a0-b489-4742-a475-51ad62c3a1fc">
-	<property name="ireport.zoom" value="4.2796750591650286"/>
-	<property name="ireport.x" value="1829"/>
-	<property name="ireport.y" value="1285"/>
+	<property name="ireport.zoom" value="1.8150000000000117"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="207"/>
 	<subDataset name="PAGAR" whenResourceMissingType="Empty" uuid="45e6538e-8ccc-4142-a695-5d8280426ed6">
 		<parameter name="RECORD_ID" class="java.lang.Integer" isForPrompting="false"/>
 		<parameter name="C_Invoice_ID" class="java.math.BigDecimal" isForPrompting="false"/>
@@ -141,7 +141,8 @@ AND p.Group2 IN ('Y GIMMICK','Y POIN')]]>
 	g.name Greeting,
 	(SELECT MAX(ux.Name) FROM AD_User ux INNER JOIN C_BPartner bpbx ON (bpbx.C_BPartner_ID = ux.C_BPartner_ID) WHERE bpbx.C_BPartner_ID = bp.Billing_ID) BILLING_USERNAME,
 	bp.C_BP_Group_ID,
-	bpl.IsMeterai AS ISMETERAI
+	bpl.IsMeterai AS ISMETERAI,
+	orgt.Description AS ORGTRX_DESC
 FROM C_InvoiceLine il
 INNER JOIN C_Invoice i ON (i.C_Invoice_ID = il.C_Invoice_ID)
 LEFT JOIN C_PaymentTerm pt ON (pt.C_PaymentTerm_ID = i.C_PaymentTerm_ID)
@@ -278,6 +279,7 @@ ORDER BY il.Line]]>
 	<field name="billing_username" class="java.lang.String"/>
 	<field name="c_bp_group_id" class="java.math.BigDecimal"/>
 	<field name="ismeterai" class="java.lang.String"/>
+	<field name="orgtrx_desc" class="java.lang.String"/>
 	<variable name="NO_URUT" class="java.lang.Integer" calculation="Sum">
 		<variableExpression><![CDATA[($F{product_name}!=null & $F{m_product_category_id}.intValue()!=1000011) |
 ($F{product_name}==null & $F{c_charge_id}==null & $F{isdescription}.equalsIgnoreCase( "N" )) &
@@ -407,7 +409,7 @@ $V{P_QTYENTERED}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	</variable>
 	<variable name="ISERROR" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$V{ISZERO} && $F{orgtrxid}.equals(BigDecimal.valueOf(1000025) ) && $F{product_code}.startsWith( "G" )? true :
-($F{orgtrxid}.equals(BigDecimal.valueOf(1000025))
+(($F{orgtrxid}.equals(BigDecimal.valueOf(1000025) ) || !$V{ISZERO})
 && $F{qtyentered}.remainder( $F{unitsperpallet},MathContext.DECIMAL32 ).compareTo( java.math.BigDecimal.valueOf( 0 ) )==0? false : true)]]></variableExpression>
 	</variable>
 	<variable name="P_NAME" class="java.lang.String" calculation="Highest">
@@ -487,21 +489,22 @@ $F{discount2} : $F{discount1}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement uuid="1d4bac10-2972-4979-a128-9f632158ea82" x="328" y="0" width="45" height="15">
-						<printWhenExpression><![CDATA[$F{orgtrxid}.equals(BigDecimal.valueOf(1000025))]]></printWhenExpression>
+						<printWhenExpression><![CDATA[$F{orgtrxid}.equals(BigDecimal.valueOf(1000025)) || !$V{ISZERO}]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="0">
 						<rightPen lineWidth="0.0" lineStyle="Dotted"/>
 					</box>
 					<textElement textAlignment="Right" verticalAlignment="Top"/>
-					<textFieldExpression><![CDATA[$V{ISERROR}?
-$F{product_name}.endsWith( "@1" ) ? ("- Roll")
-        :"Error"
-    : $F{product_name}.endsWith( "@1" ) ? ("- Roll")
-        : (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Roll")]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{ISERROR}? $F{product_name}.endsWith( "@1" ) ? ("- Roll")
+    : "Error"
+: $F{product_name}.endsWith( "@1" ) ? ("- Roll")
+    : $F{orgtrxid}.equals(BigDecimal.valueOf(1000025)) ? (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Roll")
+        : $F{orgtrx_desc}.contains( "TR" ) ? (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Set")
+            : "Error"]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement uuid="1d4bac10-2972-4979-a128-9f632158ea82" x="294" y="0" width="79" height="15">
-						<printWhenExpression><![CDATA[!$F{orgtrxid}.equals(BigDecimal.valueOf(1000025))]]></printWhenExpression>
+						<printWhenExpression><![CDATA[!$F{orgtrxid}.equals(BigDecimal.valueOf(1000025)) && $V{ISZERO}]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="10">
 						<rightPen lineWidth="0.0" lineStyle="Dotted"/>
@@ -511,7 +514,7 @@ $F{product_name}.endsWith( "@1" ) ? ("- Roll")
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement uuid="1d4bac10-2972-4979-a128-9f632158ea82" x="294" y="0" width="38" height="15">
-						<printWhenExpression><![CDATA[$F{orgtrxid}.equals(BigDecimal.valueOf(1000025))]]></printWhenExpression>
+						<printWhenExpression><![CDATA[$F{orgtrxid}.equals(BigDecimal.valueOf(1000025)) || !$V{ISZERO}]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="3">
 						<rightPen lineWidth="0.0" lineStyle="Dotted"/>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PickList" language="groovy" pageWidth="612" pageHeight="396" columnWidth="584" leftMargin="14" rightMargin="14" topMargin="14" bottomMargin="14" uuid="c979cd7c-a35f-4c63-8a1c-b4a96faab84e">
-	<property name="ireport.zoom" value="3.215383215000002"/>
-	<property name="ireport.x" value="1216"/>
-	<property name="ireport.y" value="633"/>
+	<property name="ireport.zoom" value="1.2396694214876038"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="192"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2" rightPadding="5"/>
 	</style>
@@ -105,7 +105,8 @@
 	o.istest,
 	ox.AD_Org_ID OrgTrxID,
 	p.UnitsPerPallet,
-	ol.Source_OrderLine_ID
+	ol.Source_OrderLine_ID,
+	ox.Description OrgTrx_Desc
 FROM C_OrderLine ol
 INNER JOIN C_Order o ON (o.C_Order_ID = ol.C_Order_ID)
 LEFT JOIN C_Tax t ON (t.C_Tax_ID = ol.C_Tax_ID)
@@ -177,6 +178,7 @@ WHERE	1 = 1
 	<field name="orgtrxid" class="java.math.BigDecimal"/>
 	<field name="unitsperpallet" class="java.math.BigDecimal"/>
 	<field name="source_orderline_id" class="java.math.BigDecimal"/>
+	<field name="orgtrx_desc" class="java.lang.String"/>
 	<variable name="LINENETAMT_1" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{linenetamt}]]></variableExpression>
 	</variable>
@@ -196,12 +198,12 @@ WHERE	1 = 1
 		<variableExpression><![CDATA[$F{unitsperpallet}.equals( BigDecimal.valueOf(0) )]]></variableExpression>
 	</variable>
 	<variable name="QTYROLL" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[$V{ISZERO} ? 0 :
+		<variableExpression><![CDATA[$V{ISZERO} ? BigDecimal.valueOf(0) :
 $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	</variable>
 	<variable name="ISERROR" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$V{ISZERO} && $F{orgtrxid}==1000025 ? false :
-($F{orgtrxid}==1000025 && $F{qtyentered}.remainder( $F{unitsperpallet},MathContext.DECIMAL32 ).compareTo( java.math.BigDecimal.valueOf( 0 ) )==0? false : true)]]></variableExpression>
+(($V{IS_SUPREME} || !$V{ISZERO}) && $F{qtyentered}.remainder( $F{unitsperpallet},MathContext.DECIMAL32 ).compareTo( java.math.BigDecimal.valueOf( 0 ) )==0? false : true)]]></variableExpression>
 	</variable>
 	<variable name="IS_BOMLINE" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{source_orderline_id} > 0]]></variableExpression>
@@ -222,6 +224,9 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	</variable>
 	<variable name="IS_SUPREME" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{orgtrxid}==1000025]]></variableExpression>
+	</variable>
+	<variable name="IS_TR" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{orgtrx_desc}.contains( "TR" )]]></variableExpression>
 	</variable>
 	<group name="BOM">
 		<groupExpression><![CDATA[$F{source_orderline_id}]]></groupExpression>
@@ -501,13 +506,16 @@ $F{product_name}:$F{description}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 				<reportElement uuid="2d4942d2-39e1-4ef2-a700-86964796e7b5" stretchType="RelativeToTallestObject" x="523" y="0" width="61" height="15">
-					<printWhenExpression><![CDATA[$V{IS_SUPREME} && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO}) && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$V{ISERROR}? "Error" : (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Roll")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{ISERROR}? "Error"
+: $V{IS_SUPREME} && !$V{ISZERO}? (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Roll")
+        : $V{IS_TR} && !$V{ISZERO} ? (new DecimalFormat("#,##0").format($V{QTYROLL}) + " Set")
+            : "Error"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement uuid="a48da6d6-fcee-4285-a8d6-af02aa9d9dbc" x="0" y="0" width="27" height="15">
@@ -519,7 +527,7 @@ $F{product_name}:$F{description}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="2d4942d2-39e1-4ef2-a700-86964796e7b5" stretchType="RelativeToTallestObject" x="478" y="0" width="45" height="15">
-					<printWhenExpression><![CDATA[$V{IS_SUPREME} && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO}) && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
@@ -529,7 +537,7 @@ $F{product_name}:$F{description}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="2d4942d2-39e1-4ef2-a700-86964796e7b5" stretchType="RelativeToTallestObject" x="478" y="0" width="106" height="15">
-					<printWhenExpression><![CDATA[!$V{IS_SUPREME} || $V{IS_PRODUCT_Y}]]></printWhenExpression>
+					<printWhenExpression><![CDATA[(!$V{IS_SUPREME} && $V{ISZERO}) || $V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right" verticalAlignment="Top">
