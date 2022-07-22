@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RMA" language="groovy" pageWidth="612" pageHeight="396" columnWidth="598" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" uuid="a200967b-3eff-4f56-b465-76b4cc81bdf2">
-	<property name="ireport.zoom" value="1.0263162364614133"/>
+	<property name="ireport.zoom" value="1.818181818181819"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="144"/>
+	<property name="ireport.y" value="149"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -361,7 +361,7 @@ $F{qty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
 				<reportElement uuid="ed0e136c-f12b-40e3-9236-01215ab76ca4" x="338" y="0" width="47" height="17">
-					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO}) && $F{product_code} != null]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right"/>
@@ -392,7 +392,7 @@ $F{qty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
 				<reportElement uuid="ed0e136c-f12b-40e3-9236-01215ab76ca4" x="384" y="0" width="56" height="17">
-					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO}) && $F{product_code} != null]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement textAlignment="Right"/>
@@ -403,7 +403,7 @@ $F{qty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0">
 				<reportElement uuid="ed0e136c-f12b-40e3-9236-01215ab76ca4" x="338" y="0" width="102" height="17">
-					<printWhenExpression><![CDATA[(!$V{IS_SUPREME} && $V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[(!$V{IS_SUPREME} && ($V{ISZERO} || $F{product_code} == null))]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="10"/>
 				<textElement textAlignment="Right"/>
