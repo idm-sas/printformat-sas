@@ -136,8 +136,8 @@ AND p.Group2 IN ('Y GIMMICK','Y POIN')]]>
 	p.UnitsPerPallet,
 	CASE WHEN COALESCE(pin.AD_Process_ID,0) = 550297 THEN TRUE ELSE FALSE END IsPreview,
 	head.group1 as PAKET_NAME,
-	ROUND(COALESCE(CASE WHEN i.c_doctypetarget_id=1000002 OR i.c_doctypetarget_id=1000004 THEN (case when ol.dateordered >= '2022-04-01 00:00:00' then pp.pricelist/1.11 else pp.pricelist/1.1 end)
-	ELSE pp.pricelist END, 0),2) AS PAKET_PRICE,
+	COALESCE(CASE WHEN i.c_doctypetarget_id=1000002 OR i.c_doctypetarget_id=1000004 THEN (case when ol.dateordered >= '2022-04-01 00:00:00' then pp.pricelist/1.11 else pp.pricelist/1.1 end)
+	ELSE pp.pricelist END, 0) AS PAKET_PRICE,
 	g.name Greeting,
 	(SELECT MAX(ux.Name) FROM AD_User ux INNER JOIN C_BPartner bpbx ON (bpbx.C_BPartner_ID = ux.C_BPartner_ID) WHERE bpbx.C_BPartner_ID = bp.Billing_ID) BILLING_USERNAME,
 	bp.C_BP_Group_ID,
@@ -416,7 +416,7 @@ $V{P_QTYENTERED}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 		<variableExpression><![CDATA[$F{paket_name}]]></variableExpression>
 	</variable>
 	<variable name="DISCOUNT_PAKET" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[(($F{paket_price}.multiply($F{qtyinvoiced})).subtract($F{paket_amount}))]]></variableExpression>
+		<variableExpression><![CDATA[(($F{paket_price}.multiply($F{qtyinvoiced})).setScale(2, java.math.RoundingMode.HALF_UP).subtract($F{paket_amount}))]]></variableExpression>
 		<initialValueExpression><![CDATA[0]]></initialValueExpression>
 	</variable>
 	<group name="BOM">
