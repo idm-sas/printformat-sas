@@ -128,6 +128,9 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	<variable name="IS_TR" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{orgtrxdes}.contains( "TR" )]]></variableExpression>
 	</variable>
+	<variable name="IS_PRODUCT_Y" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{product_code}.trim().toUpperCase().startsWith("Y")]]></variableExpression>
+	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -343,11 +346,11 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<textElement textAlignment="Center">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{orgtrxid}==1000025? "MTR" : $F{uom}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{IS_SUPREME} && !$V{IS_PRODUCT_Y} ? "MTR" : $F{uom}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="76feadf6-3abd-4585-8700-0bd819d2b6c5" style="Detail Qty" stretchType="RelativeToTallestObject" x="466" y="0" width="79" height="17">
-					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO}) && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement>
@@ -367,7 +370,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="76feadf6-3abd-4585-8700-0bd819d2b6c5" style="Detail Qty" stretchType="RelativeToTallestObject" x="421" y="0" width="45" height="17">
-					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO}) && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2"/>
 				<textElement>
@@ -377,7 +380,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="76feadf6-3abd-4585-8700-0bd819d2b6c5" style="Detail Qty" stretchType="RelativeToTallestObject" x="421" y="0" width="124" height="17">
-					<printWhenExpression><![CDATA[(!$V{IS_SUPREME} && $V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[(!$V{IS_SUPREME} && $V{ISZERO}) || $V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="10"/>
 				<textElement>

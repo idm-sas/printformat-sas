@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InventoryMove" language="groovy" pageWidth="603" pageHeight="464" columnWidth="579" leftMargin="12" rightMargin="12" topMargin="12" bottomMargin="12" uuid="82e95c18-ca4f-4631-b3ef-f00d859fe9d0">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="246"/>
+	<property name="ireport.y" value="198"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="11">
 		<box leftPadding="2"/>
 	</style>
@@ -134,6 +134,9 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	</variable>
 	<variable name="IS_TR" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{orgtrxdes}.contains( "TR" )]]></variableExpression>
+	</variable>
+	<variable name="IS_PRODUCT_Y" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{product_code}.trim().toUpperCase().startsWith("Y")]]></variableExpression>
 	</variable>
 	<background>
 		<band height="440">
@@ -398,11 +401,11 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{orgtrxid}==1000025? "MTR" : $F{uom}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{IS_SUPREME} && !$V{IS_PRODUCT_Y} ? "MTR" : $F{uom}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="d2d53063-095d-4822-99e5-3d34fd31af3a" style="Detail" stretchType="RelativeToTallestObject" x="473" y="0" width="60" height="15">
-					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO}) && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="2">
 					<topPen lineWidth="0.0"/>
@@ -459,7 +462,7 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="d2d53063-095d-4822-99e5-3d34fd31af3a" style="Detail" stretchType="RelativeToTallestObject" x="419" y="0" width="54" height="15">
-					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[($V{IS_SUPREME} || !$V{ISZERO}) && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.0"/>
@@ -474,7 +477,7 @@ $F{movementqty}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement uuid="d2d53063-095d-4822-99e5-3d34fd31af3a" style="Detail" stretchType="RelativeToTallestObject" x="419" y="0" width="114" height="15">
-					<printWhenExpression><![CDATA[(!$V{IS_SUPREME} && $V{ISZERO})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[(!$V{IS_SUPREME} && $V{ISZERO}) || $V{IS_PRODUCT_Y}]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="2" rightPadding="10">
 					<topPen lineWidth="0.0"/>

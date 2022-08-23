@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NotaKredit" pageWidth="609" pageHeight="396" columnWidth="585" leftMargin="12" rightMargin="12" topMargin="5" bottomMargin="20" uuid="5c6c75a0-b489-4742-a475-51ad62c3a1fc">
 	<property name="ireport.zoom" value="1.36363636363637"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="236"/>
+	<property name="ireport.y" value="140"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<parameter name="C_Invoice_ID" class="java.math.BigDecimal"/>
 	<queryString>
@@ -257,6 +257,9 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	<variable name="IS_SUPREME" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{orgtrxid}.equals(BigDecimal.valueOf(1000025))]]></variableExpression>
 	</variable>
+	<variable name="IS_PRODUCT_Y" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{product_code}.trim().toUpperCase().startsWith("Y")]]></variableExpression>
+	</variable>
 	<group name="Product" keepTogether="true">
 		<groupExpression><![CDATA[$F{product_code}]]></groupExpression>
 		<groupFooter>
@@ -273,7 +276,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement uuid="1d4bac10-2972-4979-a128-9f632158ea82" stretchType="RelativeToTallestObject" x="287" y="0" width="48" height="15">
-						<printWhenExpression><![CDATA[!$F{product_code}.equals( "DP - Penjualan" ) && ($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
+						<printWhenExpression><![CDATA[!$F{product_code}.equals( "DP - Penjualan" ) && ($V{IS_SUPREME} || !$V{ISZERO}) && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="0">
 						<rightPen lineWidth="0.0" lineStyle="Dotted"/>
@@ -292,7 +295,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 						<rightPen lineWidth="0.0" lineStyle="Dotted"/>
 					</box>
 					<textElement textAlignment="Center" verticalAlignment="Top"/>
-					<textFieldExpression><![CDATA[$F{orgtrxid}.equals(BigDecimal.valueOf(1000025))? "MTR" : $F{uom}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$V{IS_SUPREME} && !$V{IS_PRODUCT_Y} ? "MTR" : $F{uom}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
 					<reportElement uuid="55bf7931-aa05-4c88-a950-4f56d23aa695" stretchType="RelativeToTallestObject" x="435" y="0" width="150" height="15"/>
@@ -326,7 +329,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement uuid="1d4bac10-2972-4979-a128-9f632158ea82" stretchType="RelativeToTallestObject" x="242" y="0" width="45" height="15">
-						<printWhenExpression><![CDATA[!$F{product_code}.equals( "DP - Penjualan" ) && ($V{IS_SUPREME} || !$V{ISZERO})]]></printWhenExpression>
+						<printWhenExpression><![CDATA[!$F{product_code}.equals( "DP - Penjualan" ) && ($V{IS_SUPREME} || !$V{ISZERO}) && !$V{IS_PRODUCT_Y}]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="3">
 						<rightPen lineWidth="0.0" lineStyle="Dotted"/>
@@ -336,7 +339,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 					<reportElement uuid="1d4bac10-2972-4979-a128-9f632158ea82" stretchType="RelativeToTallestObject" x="242" y="0" width="92" height="15">
-						<printWhenExpression><![CDATA[!$F{product_code}.equals( "DP - Penjualan" ) && (!$V{IS_SUPREME} && $V{ISZERO})]]></printWhenExpression>
+						<printWhenExpression><![CDATA[!$F{product_code}.equals( "DP - Penjualan" ) && (!$V{IS_SUPREME} && $V{ISZERO}) || $V{IS_PRODUCT_Y}]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" rightPadding="10">
 						<rightPen lineWidth="0.0" lineStyle="Dotted"/>
