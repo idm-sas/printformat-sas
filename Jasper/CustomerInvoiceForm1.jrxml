@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CustomerInvoiceForm" pageWidth="694" pageHeight="396" whenNoDataType="AllSectionsNoDetail" columnWidth="686" leftMargin="4" rightMargin="4" topMargin="5" bottomMargin="4" isSummaryWithPageHeaderAndFooter="true" uuid="5c6c75a0-b489-4742-a475-51ad62c3a1fc">
-	<property name="ireport.zoom" value="1.8150000000000117"/>
+	<property name="ireport.zoom" value="0.8467108950806722"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="207"/>
+	<property name="ireport.y" value="0"/>
 	<subDataset name="PAGAR" whenResourceMissingType="Empty" uuid="45e6538e-8ccc-4142-a695-5d8280426ed6">
 		<parameter name="RECORD_ID" class="java.lang.Integer" isForPrompting="false"/>
 		<parameter name="C_Invoice_ID" class="java.math.BigDecimal" isForPrompting="false"/>
@@ -142,7 +142,8 @@ AND p.Group2 IN ('Y GIMMICK','Y POIN')]]>
 	(SELECT MAX(ux.Name) FROM AD_User ux INNER JOIN C_BPartner bpbx ON (bpbx.C_BPartner_ID = ux.C_BPartner_ID) WHERE bpbx.C_BPartner_ID = bp.Billing_ID) BILLING_USERNAME,
 	bp.C_BP_Group_ID,
 	bpl.IsMeterai AS ISMETERAI,
-	orgt.Description AS ORGTRX_DESC
+	orgt.Description AS ORGTRX_DESC,
+	parse('AD_User', i.CreatedBy, 1) AS INVOICE_CREATEDBY
 FROM C_InvoiceLine il
 INNER JOIN C_Invoice i ON (i.C_Invoice_ID = il.C_Invoice_ID)
 LEFT JOIN C_PaymentTerm pt ON (pt.C_PaymentTerm_ID = i.C_PaymentTerm_ID)
@@ -280,6 +281,7 @@ ORDER BY il.Line]]>
 	<field name="c_bp_group_id" class="java.math.BigDecimal"/>
 	<field name="ismeterai" class="java.lang.String"/>
 	<field name="orgtrx_desc" class="java.lang.String"/>
+	<field name="invoice_createdby" class="java.lang.String"/>
 	<variable name="NO_URUT" class="java.lang.Integer" calculation="Sum">
 		<variableExpression><![CDATA[($F{product_name}!=null & $F{m_product_category_id}.intValue()!=1000011) |
 ($F{product_name}==null & $F{c_charge_id}==null & $F{isdescription}.equalsIgnoreCase( "N" )) &
@@ -563,6 +565,15 @@ $F{discount2} : $F{discount1}]]></textFieldExpression>
 					<font size="62"/>
 				</textElement>
 				<textFieldExpression><![CDATA["JANGAN DIPROSES !"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="5c6bbba1-f359-4f1a-be23-3987e2d87014" stretchType="RelativeToBandHeight" x="4" y="256" width="684" height="104" forecolor="#FF0000">
+					<printWhenExpression><![CDATA[$F{grandtotal}.doubleValue() == 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="62"/>
+				</textElement>
+				<textFieldExpression><![CDATA["JANGAN DIPRINT !"]]></textFieldExpression>
 			</textField>
 		</band>
 	</background>
@@ -934,23 +945,23 @@ new java.util.Date()]]></textFieldExpression>
 		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="35" splitType="Stretch">
+		<band height="40" splitType="Stretch">
 			<textField>
-				<reportElement uuid="4a3591e8-2952-4eed-b8b6-fbdf875d2876" positionType="FixRelativeToBottom" x="604" y="13" width="57" height="11" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="4a3591e8-2952-4eed-b8b6-fbdf875d2876" positionType="FixRelativeToBottom" x="604" y="18" width="57" height="11" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement uuid="2756da38-175a-46ee-b792-030e2f4b910c" positionType="FixRelativeToBottom" x="661" y="13" width="24" height="11" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="2756da38-175a-46ee-b792-030e2f4b910c" positionType="FixRelativeToBottom" x="661" y="18" width="24" height="11" isRemoveLineWhenBlank="true"/>
 				<textElement verticalAlignment="Bottom">
 					<font size="8" isItalic="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="1" y="24" width="246" height="10" isRemoveLineWhenBlank="true">
+				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="1" y="29" width="246" height="10" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{bp_value}.equalsIgnoreCase( "12372WZ" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -960,7 +971,7 @@ new java.util.Date()]]></textFieldExpression>
 				<text><![CDATA[Putih : Customer (jika lunas). Merah : Delivery, Kuning : Customer, Hijau : Accounting]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="4" y="12" width="60" height="12" isRemoveLineWhenBlank="true">
+				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="4" y="17" width="60" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{bp_value}.equalsIgnoreCase( "12372WZ" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -970,7 +981,7 @@ new java.util.Date()]]></textFieldExpression>
 				<text><![CDATA[PERHATIAN:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="64" y="12" width="182" height="12" isRemoveLineWhenBlank="true">
+				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="64" y="17" width="182" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{bp_value}.equalsIgnoreCase( "12372WZ" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -980,12 +991,12 @@ new java.util.Date()]]></textFieldExpression>
 				<text><![CDATA[- Barang harap diperiksa dengan baik dan teliti.]]></text>
 			</staticText>
 			<line>
-				<reportElement uuid="69a27020-c0f2-4600-865e-9fc12940a301" positionType="FixRelativeToBottom" x="1" y="11" width="685" height="1" isRemoveLineWhenBlank="true">
+				<reportElement uuid="69a27020-c0f2-4600-865e-9fc12940a301" positionType="FixRelativeToBottom" x="1" y="16" width="685" height="1" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{bp_value}.equalsIgnoreCase( "12372WZ" )]]></printWhenExpression>
 				</reportElement>
 			</line>
 			<staticText>
-				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="350" y="0" width="97" height="12" isRemoveLineWhenBlank="true">
+				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="350" y="5" width="97" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{bp_value}.equalsIgnoreCase( "12372WZ" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -995,7 +1006,7 @@ new java.util.Date()]]></textFieldExpression>
 				<text><![CDATA[( Tanda Tangan )]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="4" y="0" width="306" height="12" isRemoveLineWhenBlank="true">
+				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="4" y="5" width="306" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{bp_value}.equalsIgnoreCase( "12372WZ" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -1005,7 +1016,7 @@ new java.util.Date()]]></textFieldExpression>
 				<text><![CDATA[( Tanda Tangan, Nama Jelas, & Cap Perusahaan )]]></text>
 			</staticText>
 			<textField>
-				<reportElement uuid="d4006816-39da-4e90-a575-e21efbe0357e" positionType="FixRelativeToBottom" x="524" y="23" width="162" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="d4006816-39da-4e90-a575-e21efbe0357e" positionType="FixRelativeToBottom" x="524" y="28" width="162" height="12" isRemoveLineWhenBlank="true"/>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
@@ -1015,7 +1026,7 @@ new java.util.Date()]]></textFieldExpression>
 +" / "+$F{regioncollection}+" / "+$F{billing_username}.replaceAll("[0-9-]", "")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="465" y="11" width="58" height="13" isRemoveLineWhenBlank="true">
+				<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" positionType="FixRelativeToBottom" x="465" y="16" width="58" height="13" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{istodayfp}.equalsIgnoreCase( "Y" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -1025,7 +1036,7 @@ new java.util.Date()]]></textFieldExpression>
 				<text><![CDATA[URGENT]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement uuid="d4006816-39da-4e90-a575-e21efbe0357e" positionType="FixRelativeToBottom" x="442" y="22" width="100" height="13" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="d4006816-39da-4e90-a575-e21efbe0357e" positionType="FixRelativeToBottom" x="442" y="27" width="100" height="13" isRemoveLineWhenBlank="true"/>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Center">
 					<font size="10"/>
@@ -1034,7 +1045,7 @@ new java.util.Date()]]></textFieldExpression>
 ($F{istest} . equalsIgnoreCase("Y") ? "Customer Walk IN" : "")]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement uuid="e95bca8a-c8b8-4e1f-9fdf-9845ab594609" x="573" y="11" width="31" height="13" isRemoveLineWhenBlank="true">
+				<reportElement uuid="e95bca8a-c8b8-4e1f-9fdf-9845ab594609" x="573" y="16" width="31" height="13" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{priorityrule}.equalsIgnoreCase ("1")]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -1043,7 +1054,7 @@ new java.util.Date()]]></textFieldExpression>
 				<text><![CDATA[XLINE]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="1c1c3e4c-36b0-443d-8b1f-c8300d7c07fc" positionType="FixRelativeToBottom" x="447" y="12" width="18" height="13" isRemoveLineWhenBlank="true">
+				<reportElement uuid="1c1c3e4c-36b0-443d-8b1f-c8300d7c07fc" positionType="FixRelativeToBottom" x="447" y="17" width="18" height="13" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA[$F{ismeterai}.equalsIgnoreCase( "Y" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
@@ -1052,13 +1063,21 @@ new java.util.Date()]]></textFieldExpression>
 				</textElement>
 				<text><![CDATA[M]]></text>
 			</staticText>
+			<textField>
+				<reportElement uuid="3e0b08a5-5309-4ffd-8d8d-154b3fa8c659" positionType="FixRelativeToBottom" x="368" y="17" width="79" height="12" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{invoice_createdby}.replaceAll("[0-9-]", "")]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="115" splitType="Stretch">
+		<band height="110" splitType="Stretch">
 			<printWhenExpression><![CDATA[$F{isdisplayamount}]]></printWhenExpression>
 			<line>
-				<reportElement uuid="afaabdd6-966f-401c-a90c-6edb14bf4f29" x="0" y="25" width="686" height="1">
+				<reportElement uuid="afaabdd6-966f-401c-a90c-6edb14bf4f29" x="0" y="20" width="686" height="1">
 					<printWhenExpression><![CDATA[$F{bp_value}.equalsIgnoreCase( "12372WZ" )]]></printWhenExpression>
 				</reportElement>
 				<graphicElement>
@@ -1066,7 +1085,7 @@ new java.util.Date()]]></textFieldExpression>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement uuid="bc581549-980e-4101-89b0-16673dac5bb3" x="1" y="28" width="69" height="15"/>
+				<reportElement uuid="bc581549-980e-4101-89b0-16673dac5bb3" x="1" y="23" width="69" height="15"/>
 				<box rightPadding="3"/>
 				<textElement verticalAlignment="Top">
 					<font isBold="false"/>
@@ -1074,7 +1093,7 @@ new java.util.Date()]]></textFieldExpression>
 				<text><![CDATA[Terbilang :]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement uuid="424ec8b7-8bd5-4a69-b933-24ba2c12f81d" stretchType="RelativeToTallestObject" x="0" y="43" width="334" height="40"/>
+				<reportElement uuid="424ec8b7-8bd5-4a69-b933-24ba2c12f81d" stretchType="RelativeToTallestObject" x="0" y="38" width="334" height="40"/>
 				<box leftPadding="3" rightPadding="3">
 					<leftPen lineWidth="0.0"/>
 					<rightPen lineWidth="0.0" lineStyle="Dotted"/>
@@ -1083,7 +1102,7 @@ new java.util.Date()]]></textFieldExpression>
 				<textFieldExpression><![CDATA[$V{AMTINWORDS} + " " + $F{curr_description}]]></textFieldExpression>
 			</textField>
 			<frame>
-				<reportElement uuid="ce7ab52e-972a-4f8c-81ae-0d5a6e7de2ad" x="505" y="25" width="181" height="90" isRemoveLineWhenBlank="true"/>
+				<reportElement uuid="ce7ab52e-972a-4f8c-81ae-0d5a6e7de2ad" x="505" y="20" width="181" height="90" isRemoveLineWhenBlank="true"/>
 				<staticText>
 					<reportElement uuid="07b64cc9-23fe-4937-b85e-f3977c95c791" x="1" y="0" width="96" height="15"/>
 					<box rightPadding="3"/>
