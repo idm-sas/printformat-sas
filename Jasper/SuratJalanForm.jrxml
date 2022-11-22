@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SuratJalan" language="groovy" pageWidth="609" pageHeight="392" columnWidth="595" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" isSummaryWithPageHeaderAndFooter="true" uuid="328eb258-edbc-400a-986e-092bec7c3f0c">
 	<property name="ireport.zoom" value="1.2100000000000026"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="96"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2"/>
 	</style>
@@ -111,7 +111,7 @@ LEFT JOIN C_Greeting g ON (bp.C_Greeting_ID = g.C_Greeting_ID)
 WHERE	1 = 1
 	AND io.M_InOut_ID = COALESCE($P{RECORD_ID},$P{M_InOut_ID})
 	AND p.M_Product_ID > 0
-	AND (p.Group2 IS NULL OR p.Group2 NOT IN ('Y POIN','Y GIMMICK'))
+	AND (p.Group2 IS NULL OR p.Group2 NOT IN ('Y POIN','Y GIMMICK','Y HADIAH'))
 ORDER BY iol.line]]>
 	</queryString>
 	<field name="documentno" class="java.lang.String"/>
