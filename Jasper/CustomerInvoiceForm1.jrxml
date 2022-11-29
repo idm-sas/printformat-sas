@@ -177,7 +177,8 @@ left join (select max(bpr.m_discountschema_id), bpr.ad_orgtrx_id, bpr.c_bpartner
 		z.Group1=p.Group1)
 left join ad_ref_list rl on (rl.ad_reference_id=150 and upper(rl.value)=upper(o.invoicerule))
 LEFT JOIN AD_PInstance pin ON (pin.AD_PInstance_ID = $P{AD_PINSTANCE_ID})
-LEFT JOIN M_ProductPrice pp ON (pp.M_Product_ID = head.M_Product_ID AND pp.M_PriceList_Version_ID IN (1000005, 2200030))
+LEFT JOIN M_PriceList_Version mvp ON (mvp.M_PriceList_ID = pl.M_PriceList_ID AND mvp.isactive = 'Y')
+LEFT JOIN M_ProductPrice pp ON (pp.M_Product_ID = head.M_Product_ID AND pp.M_PriceList_Version_ID = mvp.M_PriceList_Version_ID)
 LEFT JOIN C_Greeting g ON (bp.C_Greeting_ID = g.C_Greeting_ID)
 WHERE	1 = 1
 	AND i.C_Invoice_ID = COALESCE($P{RECORD_ID},$P{C_Invoice_ID})
