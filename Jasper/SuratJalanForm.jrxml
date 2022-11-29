@@ -111,7 +111,7 @@ LEFT JOIN C_Greeting g ON (bp.C_Greeting_ID = g.C_Greeting_ID)
 WHERE	1 = 1
 	AND io.M_InOut_ID = COALESCE($P{RECORD_ID},$P{M_InOut_ID})
 	AND p.M_Product_ID > 0
-	AND (p.Group2 IS NULL OR p.Group2 NOT IN ('Y POIN','Y GIMMICK','Y HADIAH'))
+	AND (p.Group2 IS NULL OR p.Group2 NOT IN ('Y POIN','Y GIMMICK','Y HADIAH') OR io.AD_OrgTrx_ID = 2200024 OR io.C_Project_ID IN (2200003,2200002))
 ORDER BY iol.line]]>
 	</queryString>
 	<field name="documentno" class="java.lang.String"/>
