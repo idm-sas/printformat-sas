@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InvoiceTTH" pageWidth="595" pageHeight="402" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="7" bottomMargin="7" isSummaryWithPageHeaderAndFooter="true" uuid="328eb258-edbc-400a-986e-092bec7c3f0c">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="130"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2"/>
@@ -96,7 +96,6 @@ LEFT JOIN AD_PInstance pin ON (pin.AD_PInstance_ID = $P{AD_PINSTANCE_ID})
 LEFT JOIN C_Campaign ca ON (ca.C_Campaign_ID = il.C_Campaign_ID)
 INNER JOIN AD_Org dor ON (dor.AD_Org_ID = i.AD_Orgtrx_ID)
 WHERE	1 = 1
-	AND (p.Group2 IN ('Y GIMMICK','Y POIN','Y HADIAH') OR ca.Value LIKE 'Y%')
 	AND i.C_Invoice_ID = COALESCE($P{RECORD_ID},$P{C_Invoice_ID})
 ORDER BY il.line]]>
 	</queryString>
