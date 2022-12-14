@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SuratJalan" language="groovy" pageWidth="609" pageHeight="392" columnWidth="595" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" isSummaryWithPageHeaderAndFooter="true" uuid="328eb258-edbc-400a-986e-092bec7c3f0c">
-	<property name="ireport.zoom" value="1.2100000000000026"/>
+	<property name="ireport.zoom" value="1.6105100000000039"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="267"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2"/>
 	</style>
@@ -92,7 +92,8 @@
 	o.FLNStatus,
 	parse('AD_User',o.SalesRep_ID,1) SALES_NAME,
 	parse('AD_User',COALESCE(oq.CreatedBy,o.CreatedBy),1) SO_CREATEDBY,
-	ot.Description ORGTRXDES
+	ot.Description ORGTRXDES,
+	bp.C_BP_Group_ID BPGroup_ID
 FROM M_InOutLine iol
 INNER JOIN M_InOut io ON (io.M_InOut_ID = iol.M_InOut_ID)
 INNER JOIN AD_Org org ON (org.AD_Org_ID = io.AD_Org_ID)
@@ -165,6 +166,7 @@ ORDER BY iol.line]]>
 	<field name="sales_name" class="java.lang.String"/>
 	<field name="so_createdby" class="java.lang.String"/>
 	<field name="orgtrxdes" class="java.lang.String"/>
+	<field name="bpgroup_id" class="java.math.BigDecimal"/>
 	<variable name="ISZERO" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{unitsperpallet}.equals( BigDecimal.valueOf(0) )]]></variableExpression>
 	</variable>
@@ -574,6 +576,16 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<textFieldExpression><![CDATA[$F{sales_name}.replaceAll("[0-9-]", "") +
 " / "+$F{so_createdby}.replaceAll("[0-9-]", "")]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement uuid="d8979123-ef12-4fb3-8d38-8286e354e39d" positionType="FixRelativeToBottom" x="0" y="75" width="52" height="15" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{bpgroup_id}.doubleValue() == 2200055 && $F{grandtotal}.doubleValue() > 1000000]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="3"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="10" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[> 1 Juta]]></text>
+			</staticText>
 		</band>
 	</pageFooter>
 	<lastPageFooter>
@@ -649,6 +661,16 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 				<textFieldExpression><![CDATA[$F{sales_name}.replaceAll("[0-9-]", "") +
 " / "+$F{so_createdby}.replaceAll("[0-9-]", "")]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement uuid="03eb6990-9c5a-491f-8a9c-6c5fbca3990f" positionType="FixRelativeToBottom" x="0" y="75" width="52" height="15" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{bpgroup_id}.doubleValue() == 2200055 && $F{grandtotal}.doubleValue() > 1000000]]></printWhenExpression>
+				</reportElement>
+				<box rightPadding="3"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="10" isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[> 1 Juta]]></text>
+			</staticText>
 		</band>
 	</lastPageFooter>
 </jasperReport>
