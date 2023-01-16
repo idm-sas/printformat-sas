@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SuratJalan" language="groovy" pageWidth="609" pageHeight="392" columnWidth="595" leftMargin="7" rightMargin="7" topMargin="7" bottomMargin="7" isSummaryWithPageHeaderAndFooter="true" uuid="328eb258-edbc-400a-986e-092bec7c3f0c">
 	<property name="ireport.zoom" value="1.6105100000000039"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="267"/>
+	<property name="ireport.y" value="0"/>
 	<style name="Default" isDefault="true" hAlign="Left" vAlign="Middle" fontSize="10">
 		<box leftPadding="2"/>
 	</style>
@@ -93,7 +93,8 @@
 	parse('AD_User',o.SalesRep_ID,1) SALES_NAME,
 	parse('AD_User',COALESCE(oq.CreatedBy,o.CreatedBy),1) SO_CREATEDBY,
 	ot.Description ORGTRXDES,
-	bp.C_BP_Group_ID BPGroup_ID
+	bp.C_BP_Group_ID BPGroup_ID,
+	io.C_Project_ID
 FROM M_InOutLine iol
 INNER JOIN M_InOut io ON (io.M_InOut_ID = iol.M_InOut_ID)
 INNER JOIN AD_Org org ON (org.AD_Org_ID = io.AD_Org_ID)
@@ -167,6 +168,7 @@ ORDER BY iol.line]]>
 	<field name="so_createdby" class="java.lang.String"/>
 	<field name="orgtrxdes" class="java.lang.String"/>
 	<field name="bpgroup_id" class="java.math.BigDecimal"/>
+	<field name="c_project_id" class="java.math.BigDecimal"/>
 	<variable name="ISZERO" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{unitsperpallet}.equals( BigDecimal.valueOf(0) )]]></variableExpression>
 	</variable>
@@ -430,6 +432,15 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA["T"]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement uuid="d01f84a1-ea1c-47f1-ba74-786a2c7df27c" x="246" y="0" width="111" height="33">
+					<printWhenExpression><![CDATA[$F{c_project_id}.intValue() == 2200002]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="15" isBold="false"/>
+				</textElement>
+				<text><![CDATA[SURAT JALAN]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<columnHeader>
