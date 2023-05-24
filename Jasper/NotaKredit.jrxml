@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="NotaKredit" pageWidth="609" pageHeight="396" columnWidth="585" leftMargin="12" rightMargin="12" topMargin="5" bottomMargin="20" uuid="5c6c75a0-b489-4742-a475-51ad62c3a1fc">
-	<property name="ireport.zoom" value="1.36363636363637"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="140"/>
+	<property name="ireport.zoom" value="1.6500000000000097"/>
+	<property name="ireport.x" value="116"/>
+	<property name="ireport.y" value="79"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<parameter name="C_Invoice_ID" class="java.math.BigDecimal"/>
 	<queryString>
@@ -260,8 +260,11 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 	<variable name="IS_PRODUCT_Y" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{product_code}.trim().toUpperCase().startsWith("Y")]]></variableExpression>
 	</variable>
+	<variable name="PRODUCT_PRICE" class="java.lang.String">
+		<variableExpression><![CDATA[$F{product_name} + $V{PRICELIST}]]></variableExpression>
+	</variable>
 	<group name="Product" keepTogether="true">
-		<groupExpression><![CDATA[$F{product_code}]]></groupExpression>
+		<groupExpression><![CDATA[$V{PRODUCT_PRICE}]]></groupExpression>
 		<groupFooter>
 			<band height="16">
 				<printWhenExpression><![CDATA[($F{product_name} != null && $F{c_charge_id}.intValue() != 1000012)]]></printWhenExpression>
@@ -306,13 +309,13 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$V{AMOUNT}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement uuid="35e61e09-76bb-4a38-8fd4-e18e8dd52a15" stretchType="RelativeToTallestObject" x="375" y="0" width="60" height="15"/>
+					<reportElement uuid="35e61e09-76bb-4a38-8fd4-e18e8dd52a15" stretchType="RelativeToTallestObject" x="375" y="0" width="71" height="15"/>
 					<box topPadding="1" rightPadding="5"/>
 					<textElement textAlignment="Right" verticalAlignment="Top"/>
 					<textFieldExpression><![CDATA[$V{PRICEACTUAL}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement uuid="95cd4a96-3ea4-44af-bf8a-a9ce56a9b3da" stretchType="RelativeToTallestObject" x="435" y="1" width="69" height="15">
+					<reportElement uuid="95cd4a96-3ea4-44af-bf8a-a9ce56a9b3da" stretchType="RelativeToTallestObject" x="446" y="1" width="70" height="15">
 						<printWhenExpression><![CDATA[!$F{product_code}.equals("DP - Penjualan")]]></printWhenExpression>
 					</reportElement>
 					<box topPadding="1" leftPadding="3">
@@ -537,7 +540,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<text><![CDATA[UOM]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="ab1c7788-6617-4d11-a4cb-94a2046fc7fa" x="375" y="0" width="60" height="20"/>
+				<reportElement uuid="ab1c7788-6617-4d11-a4cb-94a2046fc7fa" x="375" y="0" width="71" height="20"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
@@ -547,7 +550,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 				<text><![CDATA[Price]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="2e766036-478a-474a-a234-b30c5952b691" x="435" y="0" width="150" height="20"/>
+				<reportElement uuid="2e766036-478a-474a-a234-b30c5952b691" x="446" y="0" width="139" height="20"/>
 				<box rightPadding="3">
 					<topPen lineWidth="1.0" lineStyle="Solid"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
@@ -640,7 +643,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			<frame>
 				<reportElement uuid="c3572e7a-fbf7-4674-aebd-3c49e3597f05" x="339" y="2" width="246" height="68" isRemoveLineWhenBlank="true"/>
 				<textField>
-					<reportElement uuid="58544c82-adf2-476a-ab2b-0b2f2ccfee94" x="97" y="0" width="69" height="15"/>
+					<reportElement uuid="58544c82-adf2-476a-ab2b-0b2f2ccfee94" x="107" y="0" width="69" height="15"/>
 					<box leftPadding="3" rightPadding="5"/>
 					<textElement verticalAlignment="Middle">
 						<font isBold="false"/>
@@ -648,7 +651,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="64a4ec33-2436-4eb5-a3de-018e16b93d09" x="97" y="45" width="69" height="15"/>
+					<reportElement uuid="64a4ec33-2436-4eb5-a3de-018e16b93d09" x="107" y="45" width="69" height="15"/>
 					<box leftPadding="3" rightPadding="5"/>
 					<textElement verticalAlignment="Middle">
 						<font isBold="false"/>
@@ -656,7 +659,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement uuid="467498a7-f140-4b96-bda8-2d1fef99702d" x="97" y="45" width="149" height="15"/>
+					<reportElement uuid="467498a7-f140-4b96-bda8-2d1fef99702d" x="107" y="45" width="139" height="15"/>
 					<box rightPadding="3"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font isBold="false"/>
@@ -664,7 +667,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$V{GRAND_TOTAL}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement uuid="824344b6-5a2d-41b2-bafb-02d538cdb454" x="97" y="0" width="149" height="15"/>
+					<reportElement uuid="824344b6-5a2d-41b2-bafb-02d538cdb454" x="107" y="0" width="139" height="15"/>
 					<box rightPadding="3"/>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font isBold="false"/>
@@ -672,7 +675,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$V{SUBTOTAL}]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement uuid="5e8ff876-486a-444c-8f07-9766d811c704" x="97" y="15" width="149" height="15" isRemoveLineWhenBlank="true">
+					<reportElement uuid="5e8ff876-486a-444c-8f07-9766d811c704" x="107" y="15" width="139" height="15" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA[$F{c_doctypetarget_id}.intValue()==550293]]></printWhenExpression>
 					</reportElement>
 					<box rightPadding="3"/>
@@ -682,7 +685,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$V{TAXAMT}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement uuid="4d4717d2-2f38-43a9-8b8a-45e4a9dc143b" x="97" y="15" width="69" height="15" isRemoveLineWhenBlank="true">
+					<reportElement uuid="4d4717d2-2f38-43a9-8b8a-45e4a9dc143b" x="107" y="15" width="69" height="15" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA[$F{c_doctypetarget_id}.intValue()==550293]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="3" rightPadding="5"/>
@@ -692,7 +695,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement uuid="2533ac4f-86f6-4f12-bd53-2262ff23b787" x="1" y="15" width="96" height="15" isRemoveLineWhenBlank="true">
+					<reportElement uuid="2533ac4f-86f6-4f12-bd53-2262ff23b787" x="1" y="15" width="106" height="15" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA[$F{c_doctypetarget_id}.intValue()==550293]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="3" rightPadding="3">
@@ -704,7 +707,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 "VAT 10%" : "VAT 11%"]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" x="1" y="0" width="96" height="15"/>
+					<reportElement uuid="5bbcdc52-82e8-4715-9c6d-97f60db85e26" x="1" y="0" width="106" height="15"/>
 					<box rightPadding="3"/>
 					<textElement verticalAlignment="Middle">
 						<font isBold="false"/>
@@ -712,7 +715,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<text><![CDATA[Sub Total]]></text>
 				</staticText>
 				<staticText>
-					<reportElement uuid="92fe8d26-3117-4cbd-a2e6-98d7471e3976" x="1" y="45" width="96" height="15"/>
+					<reportElement uuid="92fe8d26-3117-4cbd-a2e6-98d7471e3976" x="1" y="45" width="106" height="15"/>
 					<box rightPadding="3"/>
 					<textElement verticalAlignment="Middle">
 						<font isBold="false"/>
@@ -720,7 +723,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<text><![CDATA[Grand Total]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
-					<reportElement uuid="467498a7-f140-4b96-bda8-2d1fef99702d" x="97" y="31" width="149" height="15">
+					<reportElement uuid="467498a7-f140-4b96-bda8-2d1fef99702d" x="107" y="31" width="139" height="15">
 						<printWhenExpression><![CDATA[$V{DISCOUNT_TOTAL}.doubleValue() != 0 && $F{c_tax}.intValue() == 1]]></printWhenExpression>
 					</reportElement>
 					<box rightPadding="3"/>
@@ -730,7 +733,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$V{DISCOUNT_TOTAL}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement uuid="64a4ec33-2436-4eb5-a3de-018e16b93d09" x="97" y="30" width="69" height="15">
+					<reportElement uuid="64a4ec33-2436-4eb5-a3de-018e16b93d09" x="107" y="30" width="69" height="15">
 						<printWhenExpression><![CDATA[$V{DISCOUNT_TOTAL}.doubleValue() != 0 || $F{c_tax}.intValue() > 1]]></printWhenExpression>
 					</reportElement>
 					<box leftPadding="3" rightPadding="5"/>
@@ -740,7 +743,7 @@ $V{QTY}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 					<textFieldExpression><![CDATA[$F{currency}]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement uuid="92fe8d26-3117-4cbd-a2e6-98d7471e3976" x="1" y="30" width="96" height="15">
+					<reportElement uuid="92fe8d26-3117-4cbd-a2e6-98d7471e3976" x="1" y="30" width="106" height="15">
 						<printWhenExpression><![CDATA[$V{DISCOUNT_TOTAL}.doubleValue() != 0 || $F{c_tax}.intValue() > 1]]></printWhenExpression>
 					</reportElement>
 					<box rightPadding="3"/>
