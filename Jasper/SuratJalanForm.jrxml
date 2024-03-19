@@ -94,7 +94,8 @@
 	parse('AD_User',COALESCE(oq.CreatedBy,o.CreatedBy),1) SO_CREATEDBY,
 	ot.Description ORGTRXDES,
 	bp.C_BP_Group_ID BPGroup_ID,
-	io.C_Project_ID
+	io.C_Project_ID,
+	bp.IsVendor
 FROM M_InOutLine iol
 INNER JOIN M_InOut io ON (io.M_InOut_ID = iol.M_InOut_ID)
 INNER JOIN AD_Org org ON (org.AD_Org_ID = io.AD_Org_ID)
@@ -169,6 +170,7 @@ ORDER BY iol.line]]>
 	<field name="orgtrxdes" class="java.lang.String"/>
 	<field name="bpgroup_id" class="java.math.BigDecimal"/>
 	<field name="c_project_id" class="java.math.BigDecimal"/>
+	<field name="isvendor" class="java.lang.String"/>
 	<variable name="ISZERO" class="java.lang.Boolean">
 		<variableExpression><![CDATA[$F{unitsperpallet}.equals( BigDecimal.valueOf(0) )]]></variableExpression>
 	</variable>
@@ -434,7 +436,7 @@ $F{qtyentered}.divide( $F{unitsperpallet},2 )]]></variableExpression>
 			</textField>
 			<staticText>
 				<reportElement uuid="d01f84a1-ea1c-47f1-ba74-786a2c7df27c" x="246" y="0" width="111" height="33">
-					<printWhenExpression><![CDATA[$F{c_project_id}.intValue() == 2200002]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{c_project_id}.intValue() == 2200002 && $F{doctype_id}.intValue() != 1000030]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="15" isBold="false"/>
@@ -589,7 +591,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 			</textField>
 			<staticText>
 				<reportElement uuid="d8979123-ef12-4fb3-8d38-8286e354e39d" positionType="FixRelativeToBottom" x="0" y="75" width="52" height="15" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[$F{bpgroup_id}.doubleValue() == 2200055 && $F{grandtotal}.doubleValue() > 1000000]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{bpgroup_id}.doubleValue() == 2200055 && $F{grandtotal}.doubleValue() > 1000000 && $F{doctype_id}.intValue() != 1000030 && $F{isvendor}.equalsIgnoreCase( "N" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Center" verticalAlignment="Top">
@@ -674,7 +676,7 @@ $F{product_code}+" - "+$F{product_name} :  $F{description}]]></textFieldExpressi
 			</textField>
 			<staticText>
 				<reportElement uuid="03eb6990-9c5a-491f-8a9c-6c5fbca3990f" positionType="FixRelativeToBottom" x="0" y="75" width="52" height="15" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA[$F{bpgroup_id}.doubleValue() == 2200055 && $F{grandtotal}.doubleValue() > 1000000]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{bpgroup_id}.doubleValue() == 2200055 && $F{grandtotal}.doubleValue() > 1000000 && $F{doctype_id}.intValue() != 1000030 && $F{isvendor}.equalsIgnoreCase( "N" )]]></printWhenExpression>
 				</reportElement>
 				<box rightPadding="3"/>
 				<textElement textAlignment="Center" verticalAlignment="Top">
