@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Kwitansi" pageWidth="608" pageHeight="396" columnWidth="568" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="9d249eaf-a514-4d98-a712-a5937cf69414">
-	<property name="ireport.zoom" value="1.5000000000000002"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.zoom" value="4.0"/>
+	<property name="ireport.x" value="1308"/>
+	<property name="ireport.y" value="528"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
@@ -26,13 +26,15 @@
 	parse('AD_Org',i.AD_OrgTrx_ID,1) as OrgTrx,
 	parse('C_BPartner',k.Collector_ID,1) as Collector,
 	parse('AD_User',k.AD_User_ID,2) as Billing,
-	bpl.Name BP_LOCATION_NAME
+	bpl.Name BP_LOCATION_NAME,
+	parse('AD_User',k.AD_User_ID,1) as Billing_Username,
+	bpl.RegionCollection
 from z_kwitansi k
 inner join c_invoice i on (i.z_kwitansi_id=k.z_kwitansi_id)
 inner join c_doctype dt on (dt.c_doctype_id = i.c_doctype_id)
 --LEFT JOIN C_BPartner_Location bpl ON (bpl.C_BPartner_Location_ID = i.C_BPartner_Location_ID)
 LEFT JOIN (
-	SELECT ix.Z_Kwitansi_ID, bplx.C_BPartner_Location_ID, bplx.Name
+	SELECT ix.Z_Kwitansi_ID, bplx.C_BPartner_Location_ID, bplx.Name, bplx.RegionCollection
 	FROM C_BPartner_Location bplx
 	LEFT JOIN C_Invoice ix ON (ix.C_BPartner_Location_ID = bplx.C_BPartner_Location_ID)
 	WHERE ix.Z_Kwitansi_ID = COALESCE($P{RECORD_ID},$P{Z_Kwitansi_ID})
@@ -59,6 +61,8 @@ order by i.dateinvoiced, i.documentno]]>
 	<field name="collector" class="java.lang.String"/>
 	<field name="billing" class="java.lang.String"/>
 	<field name="bp_location_name" class="java.lang.String"/>
+	<field name="billing_username" class="java.lang.String"/>
+	<field name="regioncollection" class="java.lang.String"/>
 	<variable name="INV_COUNT" class="java.lang.Integer" calculation="Count">
 		<variableExpression><![CDATA[$F{inv_documentno}]]></variableExpression>
 	</variable>
@@ -375,32 +379,40 @@ null]]></variableExpression>
 	<pageFooter>
 		<band height="80">
 			<textField evaluationTime="Report">
-				<reportElement uuid="35694fe7-2a1a-4ffa-b61c-53683e99531e" positionType="FixRelativeToBottom" x="528" y="60" width="40" height="20"/>
+				<reportElement uuid="35694fe7-2a1a-4ffa-b61c-53683e99531e" positionType="FixRelativeToBottom" x="528" y="48" width="40" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement uuid="86de2d04-6627-4600-b9f9-8371cbd4ddee" positionType="FixRelativeToBottom" x="448" y="60" width="80" height="20"/>
+				<reportElement uuid="86de2d04-6627-4600-b9f9-8371cbd4ddee" positionType="FixRelativeToBottom" x="448" y="48" width="80" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="20536b10-b776-4a59-9609-8e5a7cefdaf7" positionType="FixRelativeToBottom" x="406" y="68" width="162" height="12" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{regioncollection}+" / "+$F{billing_username}.replaceAll("[0-9-]", "")]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
 	<lastPageFooter>
 		<band height="80">
 			<textField>
-				<reportElement uuid="86de2d04-6627-4600-b9f9-8371cbd4ddee" positionType="FixRelativeToBottom" x="448" y="60" width="80" height="20"/>
+				<reportElement uuid="86de2d04-6627-4600-b9f9-8371cbd4ddee" positionType="FixRelativeToBottom" x="448" y="48" width="80" height="20"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
-				<reportElement uuid="35694fe7-2a1a-4ffa-b61c-53683e99531e" positionType="FixRelativeToBottom" x="528" y="60" width="40" height="20"/>
+				<reportElement uuid="35694fe7-2a1a-4ffa-b61c-53683e99531e" positionType="FixRelativeToBottom" x="528" y="48" width="40" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
@@ -453,6 +465,14 @@ null]]></variableExpression>
 				</textElement>
 				<text><![CDATA[Terbilang :]]></text>
 			</staticText>
+			<textField>
+				<reportElement uuid="d493ee03-2bff-457e-8b1e-b64764b85361" positionType="FixRelativeToBottom" x="406" y="68" width="162" height="12" isRemoveLineWhenBlank="true"/>
+				<box leftPadding="3" rightPadding="3"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{regioncollection}+" / "+$F{billing_username}.replaceAll("[0-9-]", "")]]></textFieldExpression>
+			</textField>
 		</band>
 	</lastPageFooter>
 </jasperReport>
